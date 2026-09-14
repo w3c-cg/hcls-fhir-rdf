@@ -338,33 +338,34 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
     </section>
 
     <section id="fhir-owl">
-        <h2>FHIR OWL Ontology</h2>
+        <h2>FHIR Ontology</h2>
         <p>OWL 2 (Web Ontology Language) [[owl2-overview]] is a language designed for knowledge representation.
             OWL 2 has a model-theoretic semantics based on the description logic SROIQ [[owl2-direct-semantics]] and is also
             fully implementable in RDF [[owl2-rdf-based-semantics]].
         </p>
 
-        <p>The FHIR OWL ontology [[FHIR-OWL]] is a formal model of FHIR RDF resources designed to support logical
+        <p>The FHIR OWL ontology [[FHIR-OWL]] ("FHIR ontology" or "FHIR OWL") is a formal model of FHIR RDF resources designed to support logical
             inference on FHIR data and interoperability with other OWL ontologies. It is derived from the core FHIR
             <a>StructureDefinition</a> and <a>ElementDefinition</a> resources that define the structure of FHIR resources and
-            elements. In contrast to the <a>FHIR ShEx</a> schema, FHIR OWL uses <a href="https://www.w3.org/TR/owl-syntax/#Enumeration_of_Individuals" target="_blank"><dfn>open-world semantics</dfn></a>, where missing data
+            elements. In contrast to the <a>FHIR ShEx</a> schema, the FHIR ontology uses <a href="https://www.w3.org/TR/owl-syntax/#Enumeration_of_Individuals" target="_blank"><dfn>open-world semantics</dfn></a>, where missing data
             is not assumed to be false and different IRIs are not assumed to name different things.
         </p>
         <p>
-            Every publication of the FHIR specification re-builds FHIR OWL from all core StructureDefinition resources and includes it for <a href="https://hl7.org/fhir/downloads.html" target="_blank">download</a>. 
+            Every publication of the FHIR specification re-builds the FHIR ontology from all core StructureDefinition resources and includes it for <a href="https://hl7.org/fhir/downloads.html" target="_blank">download</a>. 
             The most recent build, corresponding to the next pre-released version, is also available at [[FHIR-OWL-Current]].
         </p>
+        <p>This document describes FHIR R6, which is only available in the most recent, pre-release build as of when this document was last updated.</p>
 
         <section id="owl-conformance">
             <h3>OWL 2 Conformance</h3>
             <p>
-                FHIR OWL uses OWL 2 DL (Description Logic) [[owl2-syntax]], which includes subclass axioms defined with
+                The FHIR ontology uses OWL 2 DL (Description Logic) [[owl2-syntax]], which includes subclass axioms defined with
                 <code>owl:allValuesFrom</code>, <code>owl:unionOf</code>, and <code>owl:cardinality</code>.
             </p>
 
-            <p>Because it is intended for use with FHIR Turtle data, FHIR OWL is currently distributed only in Turtle,
+            <p>Because it is intended for use with FHIR Turtle data, the FHIR ontology is currently distributed only in Turtle,
                 while conformant OWL 2 [[owl2-conformance]] tools are only required to support ontologies serialized in RDF/XML.
-                FHIR OWL may be converted to RDF/XML if needed, but that serialization should not be used with the
+                The FHIR ontology may be converted to RDF/XML if needed, but that serialization should not be used with the
                 FHIR XML representation, which does not use RDF.
             </p>
 
@@ -410,22 +411,22 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         <section id="mappings">
             <h3>Mappings</h3>
             <p>Every FHIR <a>StructureDefinition</a> and <a>ElementDefinition</a> has a mapping to an informal, non-normative taxonomy called
-                <a href="https://hl7.org/fhir/fivews.html" target="_blank">W5 ("Five Ws")</a>, which stands for "Who, What, Where, When, Why". FHIR OWL is distributed with
+                <a href="https://hl7.org/fhir/fivews.html" target="_blank">W5 ("Five Ws")</a>, which stands for "Who, What, Where, When, Why". The FHIR ontology is distributed with
                 these mappings represented as <code>rdfs:subClassOf</code> relations and with the W5 OWL taxonomy imported, which
                 offers a more intuitive view of how each FHIR resource type is categorized across contexts of use such as clinical,
                 administrative, or financial. These mappings are neither normative nor required and users may remove the
                 <code>owl:imports</code> statement.</p>
 
             <p>FHIR resources may also be mapped to the HL7 RIM (Reference Information Model) [[HL7v3-comparison]], but those
-                mappings are neither required nor represented in FHIR OWL.</p>
+                mappings are neither required nor represented in the FHIR ontology.</p>
         </section>
 
 
     </section>
 
     <section id="classes">
-        <h2>FHIR OWL Classes</h2>
-        <p>FHIR OWL is primarily composed of OWL classes representing sets of FHIR resource and element data.</p>
+        <h2>FHIR Ontology Classes</h2>
+        <p>The FHIR ontology is primarily composed of OWL classes representing sets of FHIR resource and element data.</p>
 
         <section id="structuredefinition-classes">
             <h3>StructureDefinition Classes</h3>
@@ -434,7 +435,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 defines rules about the structure and content of FHIR resources, elements, and data types.
                 Every FHIR StructureDefinition resource is itself an instance of the StructureDefinition type.</p>
 
-            <p>FHIR OWL maps each StructureDefinition in the core FHIR specification to an OWL class representing the set of
+            <p>The FHIR ontology maps each StructureDefinition in the core FHIR specification to an OWL class representing the set of
                 instances of that FHIR resource or data type. For example, the class <code>fhir:Patient</code> represents the set of FHIR
                 Patient resources, while <code>fhir:Address</code> represents instances of the FHIR Address data type.
                 Under an RDF interpretation, each OWL class is itself an RDF resource interpreted as a node in
@@ -442,7 +443,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 An <code>rdf:type</code> triple asserts class membership, but membership may also be inferred from axioms and is not limited to explicitly asserted <code>rdf:type</code> triples.</p>
 
   <table border="2" cellpadding="5" style="text-align: left">
-                <caption> <span class="caption">FHIR OWL class mapping for StructureDefinition</span></caption>
+                <caption> <span class="caption">FHIR ontology class mapping for StructureDefinition</span></caption>
                 <tbody>
                     <tr>
                         <th style="text-align: center">FHIR</th>
@@ -487,24 +488,24 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 </tbody>
             </table>
 
-            <p>FHIR OWL represents the relationship between a StructureDefinition resource instance and its corresponding OWL class with an 
+            <p>The FHIR ontology represents the relationship between a StructureDefinition resource instance and its corresponding OWL class with an 
                 <code>rdfs:isDefinedBy</code> annotation on the class, so RDF applications can navigate from a FHIR resource to the OWL class it is an instance of, and then to the defining StructureDefinition resource. 
-                FHIR OWL classes therefore act as links between FHIR resource or data type instances represented in RDF and their StructureDefinitions.
-                A StructureDefinition resource defines rules about a FHIR resource or data type. Its corresponding FHIR OWL class represents a set of instances of that type. Both are encoded as data in Turtle.
+                FHIR ontology classes therefore act as links between FHIR resource or data type instances represented in RDF and their StructureDefinitions.
+                A StructureDefinition resource defines rules about a FHIR resource or data type. Its corresponding FHIR ontology class represents a set of instances of that type. Both are encoded as data in Turtle.
                 </p>
 
             <p>The <a href="https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.baseDefinition" target="_blank">base definition</a>
-                of a StructureDefinition is another StructureDefinition, which FHIR OWL maps to an <code>rdfs:subClassOf</code> relation
+                of a StructureDefinition is another StructureDefinition, which the FHIR ontology maps to an <code>rdfs:subClassOf</code> relation
                 between the corresponding OWL classes. For example, <code>fhir:Patient</code> is a subclass of
                 <code>fhir:DomainResource</code>, which is equivalent to the universal statement: Anything that is a FHIR Patient is also a FHIR DomainResource. 
                 If a resource is <code>rdf:type fhir:Patient</code>, then an OWL reasoner should infer that it is also <code>rdf:type fhir:DomainResource</code>. 
             </p>
 
-            <p><a href="https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.abstract" target="_blank"><code>StructureDefinition.abstract</code></a> is not represented in FHIR OWL, but is represented in <a>FHIR ShEx</a>. 
+            <p><a href="https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.abstract" target="_blank"><code>StructureDefinition.abstract</code></a> is not represented in the FHIR ontology, but is represented in <a>FHIR ShEx</a>. 
                 Explicitly stating that a FHIR resource is an instance of <code>fhir:Base</code> is invalid (non-conformant) because the StructureDefinition for FHIR Base is abstract.  
-                This introduces no inconsistency in FHIR OWL, because every resource is already implicitly <code>rdf:type fhir:Base</code>.
-                But FHIR OWL does not require this inference to be asserted.
-                Not all invalid data are inconsistent with FHIR OWL, even though all inconsistent data are invalid.
+                This introduces no inconsistency in the FHIR ontology, because every resource is already implicitly <code>rdf:type fhir:Base</code>.
+                But the FHIR ontology does not require this inference to be asserted.
+                Not all invalid data are inconsistent with the FHIR ontology, even though all data inconsistent with the FHIR ontology are invalid.
             </p>
 
 <pre class="example turtle">
@@ -542,13 +543,13 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 A FHIR <a href="https://hl7.org/fhir/elementdefinition.html" target="_blank"><dfn>ElementDefinition</dfn></a>
                 defines rules about the content of a data element used in a FHIR resource defined in a <a>StructureDefinition</a>. 
                 A complex ElementDefinition type, like <a href="https://hl7.org/fhir/types.html#BackboneElement" target="_blank">BackboneElement</a>, defines other ElementDefinitions inside of it.
-                The canonical FHIR OWL ontology maps each complex ElementDefinition to an OWL class whose <code>ElementDefinition.id</code> is
-                mapped to the IRI and <code>rdfs:label</code>. A FHIR OWL "elements ontology" can be produced for all ElementDefinitions, but
-                is not included in the canonical FHIR OWL ontology.
+                The canonical FHIR ontology maps each complex ElementDefinition to an OWL class whose <code>ElementDefinition.id</code> is
+                mapped to the IRI and <code>rdfs:label</code>. A FHIR "elements ontology" can be produced for all ElementDefinitions, but
+                is not included in the canonical FHIR ontology.
             </p>
 
             <table border="2" cellpadding="5" style="text-align: left">
-                <caption> <span class="caption">FHIR OWL class mapping for ElementDefinition</span></caption>
+                <caption> <span class="caption">FHIR ontology class mapping for ElementDefinition</span></caption>
                 <tbody>
                     <tr>
                         <th style="text-align: center">FHIR</th>
@@ -593,7 +594,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         <section id="class-iris">
             <h3>Class IRIs</h3>
 
-            <p>Each FHIR OWL class is assigned an IRI mapped from the StructureDefinition's name, prefixed with the FHIR namespace
+            <p>Each FHIR ontology class is assigned an IRI mapped from the StructureDefinition's name, prefixed with the FHIR namespace
                 <a href="http://hl7.org/fhir/" target="_blank">&lt;http://hl7.org/fhir/&gt;</a>. The <code>fhir:Patient</code> class
                 has the IRI <a href="http://hl7.org/fhir/Patient" target="_blank">&lt;http://hl7.org/fhir/Patient&gt;</a>, while the
                 StructureDefinition instance itself is assigned an IRI mapped from its canonical URL,
@@ -612,9 +613,9 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
     </section>
 
     <section id="properties">
-        <h2>FHIR OWL Properties</h2>
+        <h2>FHIR Ontology Properties</h2>
         <p>FHIR RDF data uses <a href="https://www.w3.org/TR/rdf-schema/#ch_property" target="_blank">RDF properties</a> to link FHIR
-            resources and elements. Their meanings are defined by FHIR OWL object properties, the classes these properties restrict in axioms, and the <a>StructureDefinition</a> instances from which they are derived.</p>
+            resources and elements. Their meanings are defined by FHIR ontology object properties, the classes these properties restrict in axioms, and the <a>StructureDefinition</a> instances from which they are derived.</p>
 
         <section id="elementdefinition-object-properties">
             <h3>ElementDefinition Object Properties</h3>
@@ -623,7 +624,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 IRI corresponding to the <code>ElementDefinition.id</code>. 
             </p>
             <table border="2" cellpadding="5" style="text-align: left">
-                <caption> <span class="caption">FHIR OWL object property mapping for ElementDefinition</span></caption>
+                <caption> <span class="caption">FHIR ontology object property mapping for ElementDefinition</span></caption>
                 <tbody>
                     <tr>
                         <th style="text-align: center">FHIR</th>
@@ -682,7 +683,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             </p>
 
             <table border="2" cellpadding="5" style="text-align: left">
-                <caption> <span class="caption">FHIR OWL datatype property mapping</span></caption>
+                <caption> <span class="caption">FHIR ontology datatype property mapping</span></caption>
                 <tbody>
                     <tr>
                         <th style="text-align: center">FHIR</th>
@@ -710,7 +711,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
     </section>
 
     <section id="axioms">
-        <h2>FHIR OWL Axioms</h2>
+        <h2>FHIR Ontology Axioms</h2>
 
         <p>FHIR conformance rules [[FHIR-Conformance]] include the required data type of each element and its minimum and maximum
             cardinality. FHIR also emphasizes that not all aspects of conformance are computable; some can only be informally
@@ -758,7 +759,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             </p>
 
             <table border="2" cellpadding="5" style="text-align: left">
-                <caption> <span class="caption">FHIR OWL axiom mapping for element type</span></caption>
+                <caption> <span class="caption">FHIR ontology axiom mapping for element type</span></caption>
                 <tbody>
                     <tr>
                         <th style="text-align: center">FHIR</th>
@@ -787,12 +788,12 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 element to refer, by string value, to a FHIR resource of some specified type. For example, every
                 <code>Condition.subject</code> must refer to a resource of type Patient or Group. FHIR RDF makes references
                 easier to resolve by asserting an additional <a>Resource Link</a> to an IRI for the referenced resource. 
-                FHIR OWL represents the target types with an <code>owl:allValuesFrom</code> axiom on
+                The FHIR ontology represents the target types with an <code>owl:allValuesFrom</code> axiom on
                 <code>fhir:l</code>.
             </p>
 
             <table border="2" cellpadding="5" style="text-align: left">
-                <caption> <span class="caption">FHIR OWL axiom mapping for reference type</span></caption>
+                <caption> <span class="caption">FHIR ontology axiom mapping for reference type</span></caption>
                 <tbody>
                     <tr>
                         <th style="text-align: center">FHIR</th>
@@ -818,7 +819,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             <p>
                 The <a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.min" target="_blank"><dfn>cardinality</dfn></a>
                 of an <a>ElementDefinition</a> defines how many values the element may have.
-                In FHIR OWL, element cardinality is mapped to <code>owl:cardinality</code>, <code>owl:minCardinality</code>, and
+                In the FHIR ontology, element cardinality is mapped to <code>owl:cardinality</code>, <code>owl:minCardinality</code>, and
                 <code>owl:maxCardinality</code> axioms on the class corresponding to its <a>StructureDefinition</a>. For example,
                 <code>Observation.status</code> has a minimum and maximum cardinality of 1, so <code>fhir:Observation</code> is a
                 subclass of resources related via <code>fhir:status</code> to exactly 1 instance. Cardinality axioms are separate from <a>reference type</a> axioms.
@@ -846,7 +847,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             </p>
 
             <table border="2" cellpadding="5" style="text-align: left">
-                <caption> <span class="caption">FHIR OWL axiom mapping for element cardinality</span></caption>
+                <caption> <span class="caption">FHIR ontology axiom mapping for element cardinality</span></caption>
                 <tbody>
                     <tr>
                         <th style="text-align: center">FHIR</th>
@@ -868,7 +869,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             <h3>Element Slicing</h3>
             <p>
                 A FHIR <a href="https://hl7.org/fhir/profiling.html#slicing" target="_blank">slicing</a> type may have multiple values of different <a>element types</a> and with different <a>cardinality</a> constraints.
-                FHIR OWL maps these elements to <code>owl:qualifiedCardinality</code> axioms.
+                The FHIR ontology maps these elements to <code>owl:qualifiedCardinality</code> axioms.
             </p>
         </section>
 
@@ -889,7 +890,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
     <section id="use-cases">
         <h2>Use cases</h2>
         <p>
-            The FHIR OWL Ontology can generally be used by either materializing inferences from an OWL reasoner or rewriting certain subsets of OWL axioms [[owl2-profiles]] to queries.
+            The FHIR ontology can generally be used by either materializing inferences from an OWL reasoner or rewriting certain subsets of OWL axioms [[owl2-profiles]] to queries.
         </p>
 
         <section id="analytics">
@@ -982,7 +983,7 @@ SELECT ?patient WHERE {
             </p>
 
             <p>
-                Simplified "knowledge graphs" may also be derived from the FHIR OWL ontology for the purpose of more compactly representing queryable FHIR resource and element relationships.
+                Simplified "knowledge graphs" may also be derived from the FHIR ontology for the purpose of more compactly representing queryable FHIR resource and element relationships.
             </p>
 
             <p>
@@ -993,11 +994,11 @@ SELECT ?patient WHERE {
     </section>
 
     <section id="previous-fhir-versions">
-        <h2>Previous FHIR OWL versions</h2>
+        <h2>Previous FHIR ontology versions</h2>
 
         <p>OWL ontologies for FHIR RDF versions STU3 [[FHIR-OWL-STU3]], R4 [[FHIR-OWL-R4]], and R5 [[FHIR-OWL-R5]] are available to use but will only be officially updated if their corresponding FHIR specification versions publish new updates.</p>
 
-        <p>FHIR OWL ontology versions before R6 can generally be made compatible with R6 if a few differences are accounted for.</p>
+        <p>FHIR ontology versions before R6 can generally be made compatible with R6 if a few differences are accounted for.</p>
 
         <p>Versions R5, R4, and STU3:</p>
         <ul>
@@ -1031,9 +1032,9 @@ SELECT ?patient WHERE {
 
     <section id="acknowledgements">
         <h2>Acknowledgements</h2>
-        <p>David Booth, Eric Prud'hommeaux, Harold Solbrig, and Anthony Mallia conceived of the FHIR OWL ontology.</p>
+        <p>David Booth, Eric Prud'hommeaux, Harold Solbrig, and Anthony Mallia conceived of the FHIR ontology.</p>
         <p>Tim Prudhomme authored this document and implemented the FHIR R6 OWL ontology generator. Daniel Stone implemented the FHIR R5 OWL ontology generator.</p>
-        <p>W3C HCLS Community Group and HL7 participants in the development of the FHIR OWL ontology include: Jim Balhoff, Erich Bremer, David Booth, Detlef Grittner, Rob Hausam, Anthony Mallia, Harold Solbrig, Daniel Stone, Tim Prudhomme, Eric Prud'hommeaux, and Gaurav Vaidya.</p>
+        <p>W3C HCLS Community Group and HL7 participants in the development of the FHIR ontology include: Jim Balhoff, Erich Bremer, David Booth, Detlef Grittner, Rob Hausam, Anthony Mallia, Harold Solbrig, Daniel Stone, Tim Prudhomme, Eric Prud'hommeaux, and Gaurav Vaidya.</p>
     </section>
 </body>
 
