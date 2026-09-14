@@ -290,9 +290,9 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         <p>
             FHIR RDF defines extra elements which are useful for RDF, ShEx [[ShExSpec]], SPARQL [[sparql11-query]], and OWL [[owl2-overview]].
 
-            First, URI literals in FHIR RDF data, including fragments used as references to other FHIR resources, may add an additional <dfn>Resource Link</dfn> with <code>fhir:l</code> to an IRI (Internationalized Resource Identifier) [[rfc3987]], which can be natively <a href="https://www.w3.org/wiki/DereferenceURI" target="_blank">dereferenced</a> by RDF applications.
+            First, URI literals in FHIR RDF data, including fragments used as references to other FHIR resources, may add an additional <a href="https://hl7.org/fhir/rdf.html#primitive-uris" target="_blank"><dfn>Resource Link</dfn></a> with <code>fhir:l</code> to an IRI (Internationalized Resource Identifier) [[rfc3987]], which can be natively <a href="https://www.w3.org/wiki/DereferenceURI" target="_blank">dereferenced</a> by RDF applications.
 
-            Second, coded data elements may add a <dfn>Concept IRI</dfn>, which similarly make their codes dereferencable to externally defined RDF resources, such as OWL ontology classes.
+            Second, coded data elements may add a <a href="https://hl7.org/fhir/rdf.html#representing-concepts" target="_blank"><dfn>Concept IRI</dfn></a>, which similarly make their codes dereferencable to externally defined RDF resources, such as OWL ontology classes.
         </p>
         <pre class="example turtle">
 :exampleObservation a fhir:Observation ;
@@ -326,12 +326,12 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         <section id="fhir-shex">
             <h3>FHIR ShEx Schema</h3>
             <p>
-                <dfn>FHIR ShEx</dfn> [[FHIR-ShEx]] [[Developing-FHIR-ShEx]] is a ShEx (Shape Expressions) [[ShExSpec]] schema designed for validating FHIR
+                <dfn>FHIR ShEx</dfn> [[FHIR-ShEx]] [[Developing-FHIR-ShEx]] is a set of ShEx (Shape Expressions) [[ShExSpec]] schemas designed for validating FHIR
                 RDF data conformance with FHIR <a>StructureDefinition</a> and <a>ElementDefinition</a> conformance rules represented as ShEx shapes. 
-                The ShEx schema uses "closed-world" semantics, where missing data is assumed to be false and different IRIs are assumed to name different things.
+                The ShEx schemas for FHIR RDF use "closed-world" semantics, where missing data is assumed to be false and different IRIs are assumed to name different things.
             </p>
             <p>
-            Every publication of the FHIR specification re-builds the FHIR ShEx schema from all core StructureDefinition resources. 
+            Every publication of the FHIR specification re-builds the FHIR ShEx schema from all core StructureDefinition resources and includes them for <a href="https://hl7.org/fhir/downloads.html" target="_blank">download</a>. 
             The most recent build corresponding to the next pre-released version is also available at [[FHIR-ShEx-Build]].
             </p>
         </section>
@@ -351,7 +351,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             is not assumed to be false and different IRIs are not assumed to name different things.
         </p>
         <p>
-            Every publication of the FHIR specification re-builds FHIR OWL from all core StructureDefinition resources.
+            Every publication of the FHIR specification re-builds FHIR OWL from all core StructureDefinition resources and includes it for <a href="https://hl7.org/fhir/downloads.html" target="_blank">download</a>. 
             The most recent build, corresponding to the next pre-released version, is also available at [[FHIR-OWL-Current]].
         </p>
 
@@ -431,14 +431,15 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             <h3>StructureDefinition Classes</h3>
 
             <p>A FHIR <a href="https://hl7.org/fhir/structuredefinition.html" target="_blank"><dfn>StructureDefinition</dfn></a>
-                defines rules about the content of a certain type of FHIR resource. 
+                defines rules about the structure and content of FHIR resources, elements, and data types.
                 Every FHIR StructureDefinition resource is itself an instance of the StructureDefinition type.</p>
 
             <p>FHIR OWL maps each StructureDefinition in the core FHIR specification to an OWL class representing the set of
-                resources that are instances of that type. For example, the class <code>fhir:Patient</code> represents the set of FHIR
-                Patient resources. Under an RDF interpretation, each OWL class is itself an RDF resource interpreted as a node in
-                a graph, and the extension of that class is the set of nodes linked to the class node via <code>rdf:type</code>
-                edges.</p>
+                instances of that FHIR resource or data type. For example, the class <code>fhir:Patient</code> represents the set of FHIR
+                Patient resources, while <code>fhir:Address</code> represents instances of the FHIR Address data type.
+                Under an RDF interpretation, each OWL class is itself an RDF resource interpreted as a node in
+                a graph. A class extension in RDF is the set of graph nodes interpreted as being instances of that class.
+                An <code>rdf:type</code> triple asserts class membership, but membership may also be inferred from axioms and is not limited to explicitly asserted <code>rdf:type</code> triples.</p>
 
   <table border="2" cellpadding="5" style="text-align: left">
                 <caption> <span class="caption">FHIR OWL class mapping for StructureDefinition</span></caption>
@@ -446,7 +447,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                     <tr>
                         <th style="text-align: center">FHIR</th>
                         <th style="text-align: center">FHIR OWL</th>
-                        <th style="text-align: center">Example</th>
+                        <th style="text-align: center">Example [[owl2-manchester-syntax]]</th>
                     </tr>
                     <tr>
                         <td><a href="https://hl7.org/fhir/structuredefinition.html" target="_blank"><code>StructureDefinition</code></a></td>
@@ -488,8 +489,8 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
 
             <p>FHIR OWL represents the relationship between a StructureDefinition resource instance and its corresponding OWL class with an 
                 <code>rdfs:isDefinedBy</code> annotation on the class, so RDF applications can navigate from a FHIR resource to the OWL class it is an instance of, and then to the defining StructureDefinition resource. 
-                FHIR OWL classes therefore act as links between FHIR RDF resources and their StructureDefinitions.
-                A StructureDefintion resource defines rules about FHIR resources. A FHIR OWL class represent a set of some type of FHIR resource. Both are encoded as data in Turtle.
+                FHIR OWL classes therefore act as links between FHIR resource or data type instances represented in RDF and their StructureDefinitions.
+                A StructureDefinition resource defines rules about a FHIR resource or data type. Its corresponding FHIR OWL class represents a set of instances of that type. Both are encoded as data in Turtle.
                 </p>
 
             <p>The <a href="https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.baseDefinition" target="_blank">base definition</a>
@@ -552,7 +553,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                     <tr>
                         <th style="text-align: center">FHIR</th>
                         <th style="text-align: center">FHIR OWL</th>
-                        <th style="text-align: center">Example</th>
+                        <th style="text-align: center">Example [[owl2-manchester-syntax]]</th>
                     </tr>
                     <tr>
                         <td><a href="https://hl7.org/fhir/elementdefinition.html" target="_blank"><code>ElementDefinition</code></a></td>
@@ -648,10 +649,19 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 object property names are ambiguous except in the context of their use in FHIR data and OWL class axioms. 
                 Each object property instance in a FHIR RDF resource can be disambiguated either from the corresponding ElementDefinition in the StructureDefinition for the resource, 
                 or from the corresponding property restriction axioms in the OWL class for the resource.
-                Object properties can also be disambiguated with SWRL (Semantic Web Rule Language) [[SWRL]] rules, which result in <a>punning</a> but only for the correct, corresponding ElementDefinition:
+                Object properties can also be disambiguated with a SPARQL queries or SWRL (Semantic Web Rule Language) [[SWRL]] rules, which result in <a>punning</a> but only for the correct, corresponding ElementDefinition:
             </p>
 
-            <pre class="example turtle">
+            <pre class="example sparql">
+            CONSTRUCT {
+                ?p fhir:Patient.name ?n .
+            } WHERE {
+                ?p a fhir:Patient . 
+                ?p fhir:name ?n .
+            }
+            </pre>
+            
+            <pre class="example">
             fhir:Patient(?p) ^ fhir:name(?p, ?n) -> fhir:Patient.name(?p, ?n)
             fhir:Account(?a) ^ fhir:name(?a, ?n) -> fhir:Account.name(?a, ?n)
             fhir:Patient.name(?p, ?n) -> fhir:name(?p, ?n)
@@ -668,8 +678,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 The extra <code>fhir:v</code> prevents cases where a <a>choice type</a>  could either be a primitive type or a non-primitive type.
 
                 Primitive types, like all FHIR data types, are extensible, and so the <code>fhir:v</code> assertion allows elements to add a FHIR <a href="https://hl7.org/fhir/extensibility.html" target="_blank">Extension</a> such as
-                <a href="http://hl7.org/fhir/StructureDefinition/data-absent-reason" target="_blank">Data Absent Reason</a>, which
-                gives the reason why <code>fhir:v</code> is empty.
+                <a href="http://hl7.org/fhir/StructureDefinition/data-absent-reason" target="_blank">Data Absent Reason</a>.
             </p>
 
             <table border="2" cellpadding="5" style="text-align: left">
@@ -678,7 +687,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                     <tr>
                         <th style="text-align: center">FHIR</th>
                         <th style="text-align: center">FHIR OWL</th>
-                        <th style="text-align: center">Example</th>
+                        <th style="text-align: center">Example [[owl2-manchester-syntax]]</th>
                     </tr>
                     <tr>
                         <td>Primitive <a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.type.code" target="_blank"><code>ElementDefinition.type.code</code></a>
@@ -754,7 +763,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                     <tr>
                         <th style="text-align: center">FHIR</th>
                         <th style="text-align: center">FHIR OWL</th>
-                        <th style="text-align: center">Example</th>
+                        <th style="text-align: center">Example [[owl2-manchester-syntax]]</th>
                     </tr>
                     <tr>
                         <td><a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.type.code" target="_blank"><code>ElementDefinition.type.code</code></a></td>
@@ -788,7 +797,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                     <tr>
                         <th style="text-align: center">FHIR</th>
                         <th style="text-align: center">FHIR OWL</th>
-                        <th style="text-align: center">Example</th>
+                        <th style="text-align: center">Example [[owl2-manchester-syntax]]</th>
                     </tr>
                     <tr>
                         <td><a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.type.targetProfile" target="_blank"><code>ElementDefinition.type.targetProfile</code></a></td>
@@ -842,7 +851,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                     <tr>
                         <th style="text-align: center">FHIR</th>
                         <th style="text-align: center">FHIR OWL</th>
-                        <th style="text-align: center">Example</th>
+                        <th style="text-align: center">Example [[owl2-manchester-syntax]]</th>
                     </tr>
                     <tr>
                         <td><a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.min" target="_blank"><code>ElementDefinition.min</code></a>/<a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.max" target="_blank"><code>max</code></a></td>
@@ -1023,8 +1032,8 @@ SELECT ?patient WHERE {
     <section id="acknowledgements">
         <h2>Acknowledgements</h2>
         <p>David Booth, Eric Prud'hommeaux, Harold Solbrig, and Anthony Mallia conceived of the FHIR OWL ontology.</p>
-        <p>Tim Prudhomme authored this document and implemented the R6 OWL ontology. Daniel Stone implemented the R5 OWL ontology. [Who else?] </p>
-        <p>W3C HCLS Community Group and HL7 participants in the development of the FHIR OWL ontology include: [Who else?] Jim Balhoff, Erich Bremer, David Booth, Detlef Grittner, Rob Hausam, Anthony Mallia, Harold Solbrig, Daniel Stone, Tim Prudhomme, Eric Prud'hommeaux, and Gaurav Vaidya.</p>
+        <p>Tim Prudhomme authored this document and implemented the FHIR R6 OWL ontology generator. Daniel Stone implemented the FHIR R5 OWL ontology generator.</p>
+        <p>W3C HCLS Community Group and HL7 participants in the development of the FHIR OWL ontology include: Jim Balhoff, Erich Bremer, David Booth, Detlef Grittner, Rob Hausam, Anthony Mallia, Harold Solbrig, Daniel Stone, Tim Prudhomme, Eric Prud'hommeaux, and Gaurav Vaidya.</p>
     </section>
 </body>
 
