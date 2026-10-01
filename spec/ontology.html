@@ -234,6 +234,10 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                 "HermiT": {
                     "title": "HermiT Reasoner",
                     "href": "https://mvnrepository.com/artifact/net.sourceforge.owlapi/org.semanticweb.hermit", 
+                },
+                "OMOP": {
+                    "title": "The OMOP Common Data Model",
+                    "href": "https://www.ohdsi.org/data-standardization/"
                 }
             }
         };
@@ -257,7 +261,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         <p>The HL7® FHIR® (Fast Healthcare Interoperability Resources) [[FHIR]] standard includes a specification of healthcare data models.
             This document describes the canonical OWL 2 ontology for FHIR R6 (Release 6) data represented in RDF [[FHIR-RDF]].</p>
 
-        <p>The FHIR OWL ontology [[FHIR-OWL]] [[FHIR-OWL-Current]] is developed jointly between the RDF subgroup of the HL7 ITS (Implementable Technology Specifications) Working Group [[HL7-ITS]] and the W3C HCLS (Semantic Web in Health Care and
+        <p>The FHIR OWL ontology [[FHIR-OWL]] [[FHIR-OWL-Current]] is developed jointly by the RDF subgroup of the HL7 ITS (Implementable Technology Specifications) Working Group [[HL7-ITS]] and the W3C HCLS (Semantic Web in Health Care and
             Life Sciences) Community Group [[W3C-HCLSG]].</p>
 
     </section>
@@ -292,12 +296,12 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         </p>
         <p>
             RDF (Resource Description Framework) [[rdf11-primer]] is an abstract data model designed for modeling data in a way that is less dependent on syntax and schemas, though it can be extended with schemas [[rdf-schema]]. 
-            An RDF <a href="https://www.w3.org/TR/rdf11-primer/#section-triple"><dfn>triple</dfn></a> is composed of subject, a predicate, and an object, where each is an <a href="https://www.w3.org/TR/rdf11-concepts/#section-IRIs" target="_blank"><dfn>IRI</dfn></a> (Internationalized Resource Identifier) [[rfc3987]] that denotes a <a href="https://www.w3.org/TR/rdf11-concepts/#resources-and-statements">resource</a> in a broader sense than "FHIR resource".
+            An RDF <a href="https://www.w3.org/TR/rdf11-primer/#section-triple"><dfn>triple</dfn></a> is composed of a subject, a predicate, and an object, where each is an <a href="https://www.w3.org/TR/rdf11-concepts/#section-IRIs" target="_blank"><dfn>IRI</dfn></a> (Internationalized Resource Identifier) [[rfc3987]] that denotes a <a href="https://www.w3.org/TR/rdf11-concepts/#resources-and-statements">resource</a> in a broader sense than "FHIR resource", or a <a href="https://www.w3.org/TR/rdf11-primer/#section-blank-node" target="_blank">blank node</a>.
             RDF has multiple serializations, including Turtle [[rdf-turtle]], JSON-LD[[json-ld]], and RDF/XML [[rdf11-xml]].
         </p>
         <p>
             FHIR RDF [[FHIR-RDF]] is the canonical RDF representation of FHIR resources and elements, designed to make FHIR data more interoperable with other RDF data [[RDF-Healthcare]].
-            FHIR RDF data is modeled using nested <a href="https://www.w3.org/TR/rdf11-primer/#section-blank-node" target="_blank">blank nodes</a> to be more easily readable by humans, but blank nodes can generally be <a href="https://www.w3.org/TR/rdf11-concepts/#section-skolemization" target="_blank">named</a> for internal use.
+            FHIR RDF data is modeled using nested blank nodes to be more easily readable by humans, but blank nodes can generally be <a href="https://www.w3.org/TR/rdf11-concepts/#section-skolemization" target="_blank">named</a> (<dfn>skolemized</dfn>) for internal use.
         </p>
         <p>
             Turtle is the serialization format required for conformant exchange of FHIR RDF.
@@ -306,7 +310,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         </p>
 
         <p>These prefixes are typically used in FHIR Turtle data:</p>
-        <pre class="example">
+        <pre class="example yaml">
             @prefix fhir:   &lt;http://hl7.org/fhir/&gt; .
             @prefix xsd:    &lt;http://www.w3.org/2001/XMLSchema#&gt; .
             @prefix rdf:    &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
@@ -357,11 +361,12 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             Concept IRIs asserted with <code>rdf:type</code> are useful for reasoning, but require careful interpretation in some <a href="#mapping">mapping</a> contexts to avoid confusing data elements, functioning as part of an <a>information model</a>, with instances of certain ontology classes.
             Alternatively, the <a href="https://build.fhir.org/ig/HL7/fhir-extensions/StructureDefinition-rdf-concept-iri.html" target="_blank">Concept IRI Extension</a> encodes concept IRIs as <a>resource links</a> so that these may be represented in FHIR JSON or FHIR XML for exchange.
         </p>
-        <pre class="example">
+        <pre class="example yaml">@prefix :  &lt;http://example.org/&gt; .
+
 :exampleObservation a fhir:Observation ;
     fhir:subject [
         fhir:reference [ fhir:v "Patient/example" ] ;
-        fhir:l :examplePatient # OPTIONAL reference link
+        fhir:l :examplePatient # OPTIONAL resource link
     ] ;
     fhir:code [
         a loinc:29463-7;   # OPTIONAL concept IRI
@@ -411,7 +416,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         <p>The FHIR OWL ontology [[FHIR-OWL]] ("FHIR ontology" or "FHIR OWL") is a controlled vocabulary of terms used in FHIR RDF data
             and a formal model of conformant FHIR resources designed to support logical inference and interoperability with other OWL ontologies. 
             
-            It is automatically derived from the core FHIR <a>StructureDefinition</a> and <a>ElementDefinition</a> resources that define all other core FHIR <a>resources</a> and
+            It is automatically derived from the core FHIR <a>StructureDefinition</a> resources and <a>ElementDefinition</a> elements that define all other core FHIR <a>resources</a> and
             <a>elements</a>. 
         </p>
         <p>
@@ -435,12 +440,12 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             <h3>OWL 2 Conformance</h3>
             <p>
                 The FHIR ontology uses <dfn>OWL 2 DL</dfn> (Description Logic) [[owl2-syntax]], which includes subclass axioms defined with
-                <code>owl:allValuesFrom</code>, <code>owl:unionOf</code>, and <code>owl:cardinality</code>.
+                <code>owl:allValuesFrom</code>, <code>owl:unionOf</code>, and <code>owl:cardinality</code>, but also includes XSD datatypes not supported by OWL 2.
             </p>
 
             <p>Because it is intended for use with FHIR Turtle data, the FHIR ontology is currently distributed only in Turtle,
                 while conformant OWL 2 [[owl2-conformance]] tools are only required to support ontologies serialized in RDF/XML.
-                The FHIR ontology may be converted to RDF/XML if needed, but that serialization is not intended be used with the
+                The FHIR ontology may be converted to RDF/XML if needed, but that serialization is not intended to be used with the
                 FHIR XML representation, which does not use RDF.
             </p>
 
@@ -456,14 +461,14 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
 
             <p>
                 FHIR R5+ RDF uses <a href="https://www.w3.org/TR/rdf11-mt/#rdf-collections" target="_blank"><dfn>RDF collections</dfn></a> to track element order, 
-                but OWL 2 does not support RDF collections because that vocabulary reserved for the RDF serialization of OWL axioms [[owl2-mapping-to-rdf]].
+                but OWL 2 does not support RDF collections because that vocabulary is reserved for the RDF serialization of OWL axioms [[owl2-mapping-to-rdf]].
                 Applications may translate RDF collections into repeated <a>triples</a> with the
                 <code>fhir:index</code> property used by earlier FHIR RDF versions, either for use with OWL or to enable more
                 concise SPARQL queries. However, conformant FHIR R5+ RDF data is expected to be exchanged and validated using RDF
                 collections.
             </p>
 
-            <pre class="example">
+            <pre class="example yaml">
         :patient1 a fhir:Patient ;
             # RDF collections
             fhir:name ( [
@@ -508,17 +513,17 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         </p>
         
         <p>
-            <a href="https://hl7.org/fhir/types.html#Base" target="_blank">`fhir:Base`</a> as the root has two subclasses: `fhir:Element` and `fhir:Resource`. 
+            <a href="https://hl7.org/fhir/types.html#Base" target="_blank"><code>fhir:Base</code></a> as the root has two subclasses: <code>fhir:Element</code> and <code>fhir:Resource</code>. 
             No FHIR ontology classes are explicitly declared to be disjoint but it is plausible that some are, e.g. <code>fhir:Resource</code> and <code>fhir:Element</code>, or many of their subclasses.
         </p>
 
          <p>
-            <a href="https://hl7.org/fhir/types.html#Element" target="_blank">`fhir:Element`</a> is the class of elements used in instances of `fhir:Resource` and includes subclasses like <a href="https://hl7.org/fhir/types.html#DataType" target="_blank">`fhir:DataType`</a> and <a href="https://hl7.org/fhir/types.html#BackboneElement" target="_blank">`fhir:BackboneElement`</a>.
+            <a href="https://hl7.org/fhir/types.html#Element" target="_blank"><code>fhir:Element</code></a> is the class of elements used in instances of <code>fhir:Resource</code> and includes subclasses like <a href="https://hl7.org/fhir/types.html#DataType" target="_blank"><code>fhir:DataType</code></a> and <a href="https://hl7.org/fhir/types.html#BackboneElement" target="_blank"><code>fhir:BackboneElement</code></a>.
         </p>
 
         <p>
-            <a href="https://hl7.org/fhir/Resource.html" target="_blank">`fhir:Resource`</a> is the class of FHIR resources, which includes subclasses <a href="https://hl7.org/fhir/DomainResource.html" target="_blank">`fhir:DomainResource`</a>, <a href="https://hl7.org/fhir/Bundle" target="_blank">`fhir:Bundle`</a>, <a href="https://hl7.org/fhir/Binary" target="_blank">`fhir:Binary`</a>, and <a href="https://hl7.org/fhir/Parameters" target="_blank">`fhir:Parameters`</a>.
-            Most FHIR resources are instances of `fhir:DomainResource` subclasses like <a href="https://hl7.org/fhir/Patient" target="_blank">`fhir:Patient`</a>, <a href="https://hl7.org/fhir/Observation" target="_blank">`fhir:Observation`</a>, <a href="https://hl7.org/fhir/Condition" target="_blank">`fhir:Condition`</a>, and <a href="https://hl7.org/fhir/Encounter" target="_blank">`fhir:Encounter`</a>.
+            <a href="https://hl7.org/fhir/Resource.html" target="_blank"><code>fhir:Resource</code></a> is the class of FHIR resources, which includes subclasses <a href="https://hl7.org/fhir/DomainResource.html" target="_blank"><code>fhir:DomainResource</code></a>, <a href="https://hl7.org/fhir/Bundle" target="_blank"><code>fhir:Bundle</code></a>, <a href="https://hl7.org/fhir/Binary" target="_blank"><code>fhir:Binary</code></a>, and <a href="https://hl7.org/fhir/Parameters" target="_blank"><code>fhir:Parameters</code></a>.
+            Most FHIR resources are instances of <code>fhir:DomainResource</code> subclasses like <a href="https://hl7.org/fhir/Patient" target="_blank"><code>fhir:Patient</code></a>, <a href="https://hl7.org/fhir/Observation" target="_blank"><code>fhir:Observation</code></a>, <a href="https://hl7.org/fhir/Condition" target="_blank"><code>fhir:Condition</code></a>, and <a href="https://hl7.org/fhir/Encounter" target="_blank"><code>fhir:Encounter</code></a>.
         </p>
 
         <section id="structure-definitions">
@@ -588,8 +593,8 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             </table>
 
             <p>
-                Under an RDF interpretation, each OWL class is itself an RDF resource interpreted as a node in
-                a graph. A <a href="https://www.w3.org/TR/rdf-schema/#ch_classes" target="_blank">class</a> extension in RDF is the set of graph nodes interpreted as being instances of that class.
+                In RDF, each OWL class is itself an RDF resource interpreted as a node in a graph. 
+                A <a href="https://www.w3.org/TR/rdf-schema/#ch_classes" target="_blank">class</a> extension in RDF is the set of graph nodes interpreted as being instances of that class.
                 An <code>rdf:type</code> <a>triple</a> asserts class membership, but membership may also be inferred from axioms and is not limited to explicitly asserted <code>rdf:type</code> triples.
             </p>
 
@@ -620,7 +625,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                     </tr>
                     <tr>
                         <td><a href="http://hl7.org/fhir/Patient/example" target="_blank">&lt;http://hl7.org/fhir/Patient/example&gt;</a></td>
-                        <td><a href="http://hl7.org/fhir/Patient" target="_blank">&lt;http://hl7.org/fhir/Patient&gt;,<br><a href="https://www.w3.org/TR/owl2-syntax/#Named_Individuals" target="_blank"><code>owl:NamedIndividual</code></a></td>
+                        <td><a href="http://hl7.org/fhir/Patient" target="_blank">&lt;http://hl7.org/fhir/Patient&gt;</a>,<br><a href="https://www.w3.org/TR/owl2-syntax/#Named_Individuals" target="_blank"><code>owl:NamedIndividual</code></a></td>
                     </tr>
                 </tbody>
             </table>
@@ -631,7 +636,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             </p>
             <p>To summarize: A StructureDefinition resource defines rules about a FHIR resource or data type. Its corresponding FHIR ontology class represents a set of valid instances of that type. Both are encoded as data in Turtle.</p>
 
-<pre class="example">
+<pre class="example yaml">
         # Abbreviated example corresponding to the FHIR StructureDefinition for 'Patient'
         fhir:Patient a owl:Class ;
             rdfs:label        "Patient" ;
@@ -648,19 +653,19 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             rdfs:subClassOf   [ rdf:type           owl:Restriction ;
                                 owl:onProperty     fhir:name ;
                                 owl:allValuesFrom  fhir:HumanName
-                                ];
+                              ];
             rdfs:subClassOf   [ rdf:type           owl:Restriction ;
                                 owl:onProperty     fhir:birthDate ;
                                 owl:allValuesFrom  fhir:Date
-                                ];
+                              ];
             rdfs:subClassOf   [ rdf:type            owl:Restriction ;
                                 owl:onProperty      fhir:birthDate ;
                                 owl:maxCardinality  1
-                                ];
+                              ];
             rdfs:subClassOf   [ rdf:type           owl:Restriction;
                                 owl:allValuesFrom  fhir:Patient.contact;
                                 owl:onProperty     fhir:contact
-                            ];
+                              ];
             # ...
         </pre>
           
@@ -712,7 +717,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
                     <tr>
                         <td><a href="https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.url" target="_blank"><code>StructureDefinition.url</code></a> + # <a href="https://hl7.org/fhir/resource-definitions.html#Resource.id" target="_blank"><code>ElementDefinition.id</code></a></td>
                         <td><a href="https://www.w3.org/TR/rdf11-schema/#ch_isdefinedby" target="_blank"><code>rdfs:isDefinedBy</code></a></td>
-                        <td><code>fhir:Patient.contact rdfs:isDefinedBy fhirsd:Patient#Patient.contact</code>
+                        <td><code>fhir:Patient.contact rdfs:isDefinedBy &lt;http://hl7.org/fhir/StructureDefinition/Patient#Patient.contact&gt;</code>
                         </td>
                     </tr>
                 </tbody>
@@ -720,10 +725,10 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
 
             <p>
                 Classes derived from ElementDefinitions are indicated by an <code>rdfs:isDefinedBy</code> annotation to a fragment of a StructureDefinition, e.g. 
-                <a href="http://hl7.org/fhir/StructureDefinition/Patient#Patient.contact" target="_blank">&lt;http://hl7.org/fhir/StructureDefinition/Patient#Patient.contact&gt;</a> shown in <a href="#example-5"></a>.
+                <a href="http://hl7.org/fhir/StructureDefinition/Patient#Patient.contact" target="_blank">&lt;http://hl7.org/fhir/StructureDefinition/Patient#Patient.contact&gt;</a> shown in <a href="#example-5">Example 5</a>.
             </p>
 
-<pre class="example">
+<pre class="example yaml">
 # Abbreviated example corresponding to the FHIR ElementDefinition for 'Patient.contact'
 fhir:Patient.contact  a  owl:Class;
     rdfs:label        "Patient.contact";
@@ -740,19 +745,19 @@ fhir:Patient.contact  a  owl:Class;
     rdfs:subClassOf   [ rdf:type           owl:Restriction;
                         owl:allValuesFrom  fhir:HumanName;
                         owl:onProperty     fhir:name
-                    ];
+                       ];
     rdfs:subClassOf   [ rdf:type            owl:Restriction;
                         owl:maxCardinality  1;
                         owl:onProperty      fhir:name
-                    ];
+                      ];
     rdfs:subClassOf   [ rdf:type           owl:Restriction;
                         owl:allValuesFrom  fhir:ContactPoint;
                         owl:onProperty     fhir:telecom
-                    ];
+                      ];
     rdfs:subClassOf   [ rdf:type           owl:Restriction;
                         owl:allValuesFrom  fhir:Address;
                         owl:onProperty     fhir:address
-                    ];
+                      ];
     # ...
         </pre>
 
@@ -766,7 +771,7 @@ fhir:Patient.contact  a  owl:Class;
                 where an object property could have the same IRI as a class corresponding to the wrong StructureDefinition. 
                 Classes for FHIR <a>primitive types</a> are also named with
                 an uppercase first letter, such as <code>fhir:Code</code>, but are given an <code>rdfs:label</code> annotation with
-                their conventional lowercasing, e.g. “code”.</p>
+                their conventional lowercasing, e.g. "code".</p>
 
         </section>
 
@@ -792,7 +797,7 @@ fhir:Patient.contact  a  owl:Class;
                         <th style="text-align: center">Example</th>
                     </tr>
                     <tr>
-                        <td><a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.id" target="_blank"><code>ElementDefinition.id</code></a> minus StructureDefinition prefix
+                        <td>Last segment of <a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.path" target="_blank"><code>ElementDefinition.path</code></a> with [x] removed
                         </td>
                         <td><a href="https://www.w3.org/TR/owl2-syntax/#Object_Properties" target="_blank"><code>owl:ObjectProperty</code></a></td>
                         <td><code>Patient.active</code> maps to <code>fhir:active</code></td>
@@ -802,15 +807,15 @@ fhir:Patient.contact  a  owl:Class;
             <p>
                 Since version R5, FHIR RDF uses short, unqualified object property IRIs corresponding to each
                 <code>ElementDefinition.id</code>, which makes the Turtle serialization easier to read and makes
-                SPARQL queries easier to write. FHIR object properties are fully lowercased, which avoids <a>punning</a> them with
+                SPARQL queries easier to write. FHIR object properties have lowercased first letters, which avoids <a>punning</a> them with
                 a class of the same name. For example, <code>fhir:Code</code> is a class and <code>fhir:code</code> is an object property.
             </p>
             <p>
-                Unqualified object property names result in different ElementDefinitions being mapped to the same object property. Therefore, FHIR R5+
-                object property names are ambiguous except in the context of their use in FHIR data and OWL class axioms. 
+                Unqualified object property names result in different ElementDefinitions being mapped to the same object property. FHIR R5+
+                object property names are therefore ambiguous except in the context of their use in FHIR data and OWL class axioms. 
                 Each object property instance in a FHIR RDF resource can be disambiguated either from the corresponding ElementDefinition in the StructureDefinition for the resource, 
                 or from the corresponding property restriction axioms in the OWL class for the resource.
-                Object properties can also be disambiguated with a SPARQL queries (<a href="#example-6"></a>) or SWRL (Semantic Web Rule Language) [[SWRL]] rules (<a href="#example-7"></a>), which would result in <a>punning</a> but only for the correct, corresponding ElementDefinition:
+                Object properties can also be disambiguated with SPARQL queries (<a href="#example-6">Example 6</a>) or SWRL (Semantic Web Rule Language) [[SWRL]] rules (<a href="#example-7">Example 7</a>), which would result in <a>punning</a> but only for the correct, corresponding ElementDefinition:
             </p>
 
             <pre class="example sparql">
@@ -822,7 +827,7 @@ fhir:Patient.contact  a  owl:Class;
             }
             </pre>
             
-            <pre class="example">
+            <pre class="example yaml">
             fhir:Patient(?p) ^ fhir:name(?p, ?n) -> fhir:Patient.name(?p, ?n)
             fhir:Account(?a) ^ fhir:name(?a, ?n) -> fhir:Account.name(?a, ?n)
             fhir:Patient.name(?p, ?n) -> fhir:name(?p, ?n)
@@ -834,7 +839,7 @@ fhir:Patient.contact  a  owl:Class;
         <section id="datatype-properties">
             <h3>Datatype and Annotation Properties</h3>
             <p>
-                FHIR RDF represents <a href="https://hl7.org/fhir/datatypes.html#primitive" target="_blank"><dfn>primitive types</dfn></a> -- elements with a single literal value such as a <code>xsd:string</code> -- using the single datatype property <code>fhir:v</code>.
+                FHIR RDF represents <a href="https://hl7.org/fhir/datatypes.html#primitive" target="_blank"><dfn>primitive types</dfn></a> -- elements with a single literal value such as an <code>xsd:string</code> -- using the single datatype property <code>fhir:v</code>.
 
                 Primitive types, like all FHIR data types, are extensible, and so the <code>fhir:v</code> assertion allows elements to add a <a href="https://hl7.org/fhir/extensibility.html" target="_blank">FHIR Extension</a> such as
                 <a href="http://hl7.org/fhir/StructureDefinition/data-absent-reason" target="_blank">Data Absent Reason</a>.
@@ -878,16 +883,58 @@ fhir:Patient.contact  a  owl:Class;
         </p>
 
         <p>
-            The computable conformance rules of each <a>StructureDefinition</a> are interpreted as OWL property restriction
-            axioms from the DL fragment of OWL 2, including <code>owl:allValuesFrom</code>, <code>owl:cardinality</code>, and
-            <code>owl:unionOf</code>. All axioms are stated with <code>rdfs:subClassOf</code>, representing necessary conditions, or logical implications, of being an instance of the class.
+            The FHIR ontology represents some, but not all, computable conformance rules as property restriction axioms using terms from <a>OWL 2 DL</a> 
+            like <code>owl:allValuesFrom</code>, <code>owl:cardinality</code>, and <code>owl:unionOf</code>.
+            All axioms are stated with <code>rdfs:subClassOf</code>, representing necessary conditions, or logical consequences, of being an instance of a class.
+            Because of its <a>open-world semantics</a>, axioms in OWL should <i>not</i> be understood as syntactic constraints on what data must be present.
+            Instead, FHIR ontology axioms <i>describe</i> what is true of conformant FHIR data, rather than <i>prescribe</i> any particular syntactic representation of FHIR data.
         </p>
 
         <p>
-            An OWL property restriction on a class describes the instances of that class in terms of their relations to other
-            instances. It should not be read as a syntactic constraint on what data must be present. 
-            <a>FHIR ShEx</a> shapes should be used instead to validate conformance rules interpreted as syntactic constraints. 
+            FHIR RDF data could be invalid or non-conformant while logically consistent with the FHIR ontology for two different reasons.
+            First, data might violate a conformance rule that is not represented as an axiom, such as a <a href="#fhirpath">FHIRPath</a> constraint.
+            Second, data might violate a conformance rule that is represented as an axiom, such as minimum <a>cardinality</a>, while still being consistent with that axiom in an open-world interpretation.
+            In summary: FHIR ontology axioms are always true of valid FHIR data, but not always inconsistent with invalid FHIR data.
+            A closed-world system like <a>FHIR ShEx</a> should be used for validating data, while the FHIR ontology axioms are intended for open-world, logical inference.
         </p>
+
+        <p>
+            In practice, invalid FHIR data is exchanged, stored, and analyzed in some FHIR workflows.
+            A SPARQL query for anything that is <code>rdf:type fhir:Patient</code> will return data that includes this assertion, regardless of whether it is invalid or inconsistent with the FHIR ontology.
+        </p>
+
+        <section id="base-definitions">
+            <h3>Base Definitions</h3>
+            <p> The <a href="https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.baseDefinition" target="_blank">base definition</a>
+                of a <a>StructureDefinition</a> is another StructureDefinition, which the FHIR ontology maps to an <code>rdfs:subClassOf</code> relation
+                between the corresponding OWL classes. For example, <code>fhir:Patient</code> is a subclass of
+                <code>fhir:DomainResource</code>, which is equivalent to the universal statement: Anything that is a FHIR Patient is also a FHIR DomainResource. 
+                If a resource is <code>rdf:type fhir:Patient</code>, then an OWL reasoner will infer that it is also <code>rdf:type fhir:DomainResource</code>. 
+            </p>
+
+            <p><a href="https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.abstract" target="_blank"><code>StructureDefinition.abstract</code></a> means that resources defined by this type shall not be instantiated without instantiating a more specific, non-abstract type.
+                For example, a FHIR resource is invalid if it is asserted to be an instance of <code>fhir:Base</code> and not a more specific class corresponding to a non-abstract StructureDefinition.
+                This is not inconsistent with the FHIR ontology because every resource is already implicitly <code>rdf:type fhir:Base</code>, but OWL does not require this inference to be asserted.
+            </p>
+
+            <table border="2" cellpadding="5" style="text-align: left">
+                <caption> <span class="caption">FHIR ontology axiom mapping for base definition</span></caption>
+                <tbody>
+                    <tr>
+                        <th style="text-align: center">FHIR</th>
+                        <th style="text-align: center">FHIR OWL</th>
+                        <th style="text-align: center">Example [[owl2-manchester-syntax]]</th>
+                    </tr>
+                    <tr>
+                        <td><a href="https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.baseDefinition" target="_blank"><code>StructureDefinition.baseDefinition</code></a></td>
+                        <td><a href="https://www.w3.org/TR/rdf11-schema/#ch_subclassof" target="_blank"><code>rdfs:subClassOf</code></a></td>
+                        <td><code>fhir:Patient SubClassOf: fhir:DomainResource</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+        </section>
 
         <section id="element-types">
             <h3>Element Types</h3>
@@ -897,23 +944,22 @@ fhir:Patient.contact  a  owl:Class;
                 <a href="https://hl7.org/fhir/types.html" target="_blank"><dfn>element type</dfn></a>, the value of which is defined by a
                 <a>StructureDefinition</a>, and therefore represented as an OWL class. For example, if a valid 
                 <a href="https://hl7.org/fhir/patient-definitions.html#Patient.active" target="_blank"><code>Patient.active</code></a> element has a value, 
-                then its type is <a href="https://hl7.org/fhir/datatypes.html#boolean" target="_blank"><code>boolean</code></a>, 
+                then its type is <a href="https://hl7.org/fhir/datatypes.html#dateTime" target="_blank"><code>boolean</code></a>, 
                 represented as the class <code>fhir:Boolean</code>.
 
                 The FHIR ontology represents target type relations with <code>owl:allValuesFrom</code> axioms. 
             </p>
 
             <p>
-                A FHIR <code>dateTime</code> is defined as a union of the XML Schema types <code>xsd:dateTime</code>,
+                A FHIR <a href="https://hl7.org/fhir/datatypes.html#boolean" target="_blank"><code>dateTime</code></a> is defined as a union of the XML Schema types <code>xsd:dateTime</code>,
                 <code>xsd:date</code>, <code>xsd:gYearMonth</code>, and <code>xsd:gYear</code>. 
-                Because the literal value of a
-                <a>primitive type</a> element is represented with <code>fhir:v</code>, <code>fhir:DateTime</code> has an axiom stating that all
-                of its <code>fhir:v</code> values are members of the <code>owl:unionOf</code> those types.
+                Because the literal value of a <a>primitive type</a> element is represented with <code>fhir:v</code>, <code>fhir:DateTime</code> has an <code>owl:unionOf</code> axiom stating that all
+                of its <code>fhir:v</code> values are one of those XSD types.
             </p>
 
             <p>
                 FHIR <a href="https://hl7.org/fhir/formats.html#choice" target="_blank"><dfn>choice types</dfn></a>, or polymorphic types, are also represented with <code>owl:unionOf</code>. For example,
-                <code>Observation.effective</code> can be a <code>dateTime</code>, <code>instant</code>, <code>Period</code>, or
+                <a href="https://hl7.org/fhir/observation-definitions.html#Observation.effective_x_" target="_blank"><code>Observation.effective</code></a> can be a <code>dateTime</code>, <code>instant</code>, <code>Period</code>, or
                 <code>Timing</code>, so <code>fhir:Observation</code> is a subclass of the things whose <code>fhir:effective</code>
                 values are only instances of <code>fhir:DateTime</code>, <code>fhir:Instant</code>, <code>fhir:Period</code>, or
                 <code>fhir:Timing</code>. In FHIR RDF, an instance of a choice type includes an <code>rdf:type</code> assertion stating which of these types it is. This is analogous to the type being suffixed to
@@ -947,8 +993,8 @@ fhir:Patient.contact  a  owl:Class;
             <h3>Reference Types</h3>
             <p>
                 The <a href="https://hl7.org/fhir/references.html" target="_blank"><dfn>reference type</dfn></a> of an ElementDefinition defines the type of FHIR resource the element refers to, if at all.
-                For example, every valid <a href="https://hl7.org/fhir/condition-definitions.html#Condition.subject" target="_blank"><code>Condition.subject</code></a> refers only to a resource of type Patient or Group. FHIR RDF makes references
-                easier to resolve in RDF by asserting an additional <a>resource link</a> to an <a>IRI</a> for the referenced resource. 
+                For example, every valid <a href="https://hl7.org/fhir/condition-definitions.html#Condition.subject" target="_blank"><code>Condition.subject</code></a> refers only to a resource of type Patient or Group.
+                Each FHIR RDF <code>fhir:Reference</code> element optionally asserts an additional <code>fhir:l</code> (<a>resource link</a>) to an <a>IRI</a> for the referenced resource.
                 The FHIR ontology represents reference type relations with <code>owl:allValuesFrom</code> axioms on
                 <code>fhir:l</code>.
             </p>
@@ -964,7 +1010,7 @@ fhir:Patient.contact  a  owl:Class;
                     <tr>
                         <td><a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.type.targetProfile" target="_blank"><code>ElementDefinition.type.targetProfile</code></a></td>
                         <td><a href="https://www.w3.org/TR/owl-ref/#allValuesFrom-def" target="_blank"><code>owl:allValuesFrom</code> ('only')</a> &amp; <a href="#dfn-resource-link"><code>fhir:l</code> (resource link)</a></td>
-                        <td><code>fhir:Patient SubClassOf: fhir:generalPractitioner only (fhir:l only (fhir:Organization or fhir:Practitioner or fhir:PractitionerRole))</code>
+                        <td><code>fhir:Condition SubClassOf: fhir:subject only (fhir:l only (fhir:Patient or fhir:Group))</code>
                         </td>
                     </tr>
                 </tbody>
@@ -979,32 +1025,33 @@ fhir:Patient.contact  a  owl:Class;
             <h3>Element Cardinality</h3>
             <p>
                 The <a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.min" target="_blank"><dfn>cardinality</dfn></a>
-                of an <a>ElementDefinition</a> defines how many values the element may have.
-                In the FHIR ontology, element cardinality is mapped to <code>owl:cardinality</code>, <code>owl:minCardinality</code>, and
+                of an <a>ElementDefinition</a> defines how many values the element could have.
+
+                The FHIR ontology represents element cardinality with <code>owl:cardinality</code>, <code>owl:minCardinality</code>, and
                 <code>owl:maxCardinality</code> axioms on the class corresponding to its <a>StructureDefinition</a>. For example,
-                <code>Observation.status</code> has a minimum and maximum cardinality of 1, so <code>fhir:Observation</code> is a
-                subclass of resources related via <code>fhir:status</code> to exactly 1 instance. Cardinality axioms are separate from <a>reference type</a> axioms.
+                <a href="https://hl7.org/fhir/condition-definitions.html#Condition.subject" target="_blank"><code>Condition.subject</code></a> has a minimum and maximum cardinality of 1, so 
+                every valid <code>fhir:Condition</code> instance is related via <code>fhir:subject</code> to exactly one thing. Cardinality axioms are separate from <a>reference type</a> axioms.
             </p>
 
             <p>
-                Minimum cardinality axioms in OWL are not generally inferred to be inconsistent with any
-                particular RDF data, due to its <a>open-world semantics</a>. 
-                An instance of <code>fhir:Observation</code> may be missing a <code>fhir:status</code>, but an
-                OWL reasoner will not assume that the missing data does not exist anywhere. 
-                For validation purposes, the <a>FHIR ShEx</a> schema should instead be
+                Minimum cardinality axioms in OWL are not generally inferred to be inconsistent with RDF data due to its <a>open-world semantics</a>. 
+                An instance of <code>fhir:Condition</code> may be missing a <code>fhir:subject</code>, but an
+                OWL reasoner will not assume that the missing data does not exist anywhere, or the represented condition does not have a subject.
+                A closure axiom stating that the <code>fhir:Condition</code> resource only has the <code>fhir:subject</code> values explicitly stated would be needed for an inconsistency.
+                For validation purposes, the <a>FHIR ShEx</a> schema can instead be
                 used to check whether the required data is present. Minimum cardinality axioms are more useful as sufficient conditions
                 in <code>owl:equivalentClass</code> axioms for <a href="#analytics"></a>.
             </p>
 
             <p>
-                Maximum cardinality axioms are more useful for detecting inconsistencies, but they can also lead to unintuitive
-                inferences. For example, <code>Observation.encounter</code> has at
-                most 1 Encounter. If a <code>fhir:Observation</code> is related to two instances of <code>fhir:Encounter</code>, which is invalid/non-conformant, 
-                an OWL reasoner will infer that they are the same unless given a reason why they are distinct, such as an
-                <code>owl:differentFrom</code> assertion. 
-                Fortunately, FHIR data almost always distinguishes such elements by their
-                <a href="#datatype-properties"></a>: since all FHIR <a>primitive type</a> classes have an exact cardinality of 1 <code>fhir:v</code>, two elements with
-                different <code>fhir:v</code> literals cannot be inferred to be the same.
+                Maximum cardinality axioms can detect some inconsistencies for invalid data, but they can also lead to unintuitive
+                inferences. If a <code>fhir:Condition</code> has more than one <code>fhir:subject</code> (which would be invalid in a closed-world interpretation),
+                an OWL reasoner would infer that the subjects are the same, unless given a reason why they are distinct.
+
+                Fortunately, FHIR resources and elements can be distinguished by their <a>primitive type</a> elements.
+                
+                Two instances of <code>fhir:Patient</code> with different <code>fhir:id</code> values will be inferred to be distinct, because <code>fhir:Id</code> has exactly one <code>fhir:v</code> literal value.
+                Similarly, any other primitive type elements like <code>fhir:String</code> or <code>fhir:Uri</code> are uniquely identifiable by their required <code>fhir:v</code> values, and therefore necessarily distinct.
             </p>
 
             <table border="2" cellpadding="5" style="text-align: left">
@@ -1019,7 +1066,10 @@ fhir:Patient.contact  a  owl:Class;
                         <td><a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.min" target="_blank"><code>ElementDefinition.min</code></a>/<a href="https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.max" target="_blank"><code>max</code></a></td>
                         <td><a href="https://www.w3.org/TR/owl-ref/#CardinalityRestriction"
                                 target="_blank"><code>owl:min/max/cardinality ('min' or 'max')</code></a></td>
-                        <td><code>fhir:Patient SubClassOf: fhir:birthDate max 1</code></td>
+
+                        <td>
+                            <code>fhir:Condition SubClassOf: fhir:subject exactly 1</code>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -1030,7 +1080,7 @@ fhir:Patient.contact  a  owl:Class;
             <h3>Element Slicing</h3>
             <p>
                 A FHIR <a href="https://hl7.org/fhir/profiling.html#slicing" target="_blank">slicing</a> type may have multiple values of different <a>element types</a> and with different <a>cardinalities</a>.
-                Slicing types are only used in <a href="https://hl7.org/fhir/profiling.html" target="_blank">FHIR profiles</a>, not in the core FHIR <a>StructureDefinitions</a>, and therefore are not represented in the FHIR ontology. 
+                Slicing types are only used in <a href="https://hl7.org/fhir/profiling.html" target="_blank">FHIR profiles</a>, not in the core, normative FHIR <a>StructureDefinitions</a>, and therefore are not represented in the FHIR ontology. 
                 Profiles may be similarly mapped to OWL classes and slicing types represented with <code>owl:qualifiedCardinality</code> axioms.
             </p>
         </section>
@@ -1050,7 +1100,7 @@ fhir:Patient.contact  a  owl:Class;
     </section>
 
     <section id="use-cases">
-        <h2>Use cases</h2>
+        <h2>Use Cases</h2>
         <p>
             The FHIR ontology can be used by either materializing inferences from an OWL reasoner or rewriting certain subsets of OWL axioms [[owl2-profiles]] to queries.
             A few pre-processing steps are recommended:
@@ -1059,6 +1109,7 @@ fhir:Patient.contact  a  owl:Class;
         <ul>
             <li>Convert <a>RDF collections</a> to repeated <a>triples</a> to enable OWL reasoning and more simplified SPARQL queries.</li>
             <li>Convert unsupported datatypes like <code>xsd:date</code> to supported data types like <code>xsd:dateTime</code> or <a href="https://www.w3.org/TR/owl-time/#dtd-vs-dt" target="_blank"><code>time:DateTimeDescription</code></a>, but avoid relying on any invented precision.</li>
+            <li>Convert blank nodes to <a>skolemized</a> IRIs to make OWL reasoning easier to follow.</li>
             <li>If working with FHIR R4 data, optionally convert to the more concise FHIR R5+ syntax (see <a href="#object-properties"></a>) for internal use only.</li>
         </ul>
 
@@ -1066,9 +1117,9 @@ fhir:Patient.contact  a  owl:Class;
         <section id="analytics">
             <h3>Analytics</h3>
             <p>
-                Custom, defined classes can encode reuseable logic that composes with SPARQL queries [[Blending-FHIR-OWL]].
+                Custom, defined classes can encode reusable logic that composes with SPARQL queries [[Blending-FHIR-OWL]].
                 This works especially well with <a>Concept IRIs</a> for external OWL classes corresponding to terminology codes.
-                <a href="#example-8"></a> is a FHIR SPARQL query for all Patients with some DiagnosticReport with the SNOMED code for "Malignant neoplastic disease", <code>363346000</code>. 
+                <a href="#example-8">Example 8</a> is a FHIR SPARQL query for all Patients with some DiagnosticReport with the SNOMED code for "Malignant neoplastic disease", <code>363346000</code>. 
                 This simplified query assumes the data includes no <a>RDF collections</a>.
             </p>
             <pre class="example sparql">
@@ -1089,9 +1140,9 @@ SELECT ?patient WHERE {
             </pre>
 
             <p>
-                This logic can be re-defined in an OWL class in <a href="#example-9"></a> that also takes advantage of FHIR RDF <a>concept IRIs</a>:
+                This logic can be re-defined in an OWL class in <a href="#example-9">Example 9</a> that also takes advantage of FHIR RDF <a>concept IRIs</a>:
             </p>
-            <pre class="example">
+            <pre class="example yaml">
 # "fhir:DiagnosticReport 
 #  and fhir:conclusionCode some 
 #     (fhir:concept some 'Malignant neoplastic disease (disorder)')"
@@ -1110,14 +1161,14 @@ SELECT ?patient WHERE {
         )
     ] .</pre>
             <p>
-                Given a relevant fragment of SNOMED OWL (at least the term <code>sct:363346000</code> and its logical dependencies) [[SNOMED-OWL-Toolkit]], an OWL 2 EL [[owl2-profiles]] reasoner like ELK [[ELK]] will infer the statement <code>a :CancerReport</code> on any matching data.
-                These inferred statements can be saved to a materialized graph, similiar to a materialized view.
+                Given a relevant fragment of SNOMED OWL (at least the term <code>sct:363346000</code> and its subclasses) [[SNOMED-OWL-Toolkit]], an OWL 2 EL [[owl2-profiles]] reasoner like ELK [[ELK]] will infer the statement <code>a :CancerReport</code> on any matching data.
+                These inferred statements can be saved to a materialized graph, similar to a materialized view.
             </p>
 
             <p>
                 The defined OWL class <code>:CancerReport</code> provides two benefits: 
                 First, it can classify not only DiagnosticReports coded with <code>363346000</code>, but also DiagnosticReports with any code <i>subsumed by</i> <code>363346000</code>. 
-                Second, it can be reused to compose multiple different queries like in <a href="#example-10"></a> or other classes in a consistent way.
+                Second, it can be reused to compose multiple different queries like in <a href="#example-10">Example 10</a> or other classes in a consistent way.
             </p>
             <pre class="example sparql">
 SELECT ?patient WHERE {
@@ -1129,9 +1180,9 @@ SELECT ?patient WHERE {
             </pre>
 
             <p>
-                <a href="#example-11"></a> shows further composition using terms like <code>owl:inverseOf</code>, which requires an <a>OWL 2 QL</a> system or <a>OWL 2 DL</a> reasoner like HermiT [[HermiT]]:
+                <a href="#example-11">Example 11</a> shows further composition using terms like <code>owl:inverseOf</code>, which requires an <a>OWL 2 DL</a> reasoner like HermiT [[HermiT]]:
             </p>
-            <pre class="example"><pre>
+            <pre class="example yaml">
 # "fhir:Patient 
 #  and ( inverse (fhir:l) some 
 #      ( inverse (fhir:subject) some :CancerReport))"
@@ -1147,9 +1198,9 @@ SELECT ?patient WHERE {
                                  ]
             ]
         )
-] .</pre></pre>
+] .</pre>
             <p>
-                Materializing the inferred instances of this class enables SPARQL queries to be further reduced to <a href="#example-12"></a>:
+                Materializing the inferred instances of this class enables SPARQL queries to be further reduced to <a href="#example-12">Example 12</a>:
             </p>
             <pre class="example sparql">
 SELECT ?patient WHERE {
@@ -1162,19 +1213,96 @@ SELECT ?patient WHERE {
                 In other contexts, simplified "knowledge graphs" may also be derived from the FHIR ontology, using SPARQL queries, for the purpose of more compactly representing queryable FHIR resource type and element type relationships.
             </p>
 
-            <p>
-                Simplified "knowledge graphs" may also be derived from the FHIR ontology for the purpose of more compactly representing queryable FHIR resource and element relationships.
-            </p>
-
-            <p>
-                Finally, terminology mappings using <code>rdfs:subClassOf</code>, <code>owl:equivalentClass</code>, or SKOS [[skos-reference]] may be used instead of FHIR ConceptMap resources.
-            </p>
 
         </section>
+
+        <section id="mapping">
+        <h3>Mapping</h3>
+        <p>
+            The FHIR ontology can be used to map between FHIR and non-FHIR concepts or data using techniques that do not rely on FHIR-specific tooling, for example in <a href="#mappings"></a>.
+        </p>
+
+        <p>
+            Ontology-based data access systems such as <a href="https://ontop-vkg.org/guide/" target="_blank">Ontop</a> (open-source) can rewrite OWL 2 QL [[owl2-profiles]] axioms and SPARQL queries to SQL.
+            This has been used with the FHIR ontology to dynamically transform FHIR SPARQL queries [[FHIR-Ontop-OMOP]] to OMOP relational data [[OMOP]].
+        </p>
+
+        <p>
+            Terminology mappings using <code>rdfs:subClassOf</code>, <code>owl:equivalentClass</code>, or SKOS [[skos-reference]] can sometimes be used instead of FHIR <a href="https://hl7.org/fhir/conceptmap.html" target="_blank">ConceptMap</a> resources.
+            This enables FHIR data to be queried with both terminology expansion and mapping transformations implemented with logical inference.
+        </p>
+
+        <p>
+            Finally, FHIR resources could be interpreted more literally as <a>information models</a> to better integrate with some scientific ontologies.
+            For example, a <a>concept IRI</a> could be interpreted as naming the class of things that a coded data element represents.
+            This can be encoded as a mapping to the <a href="https://obofoundry.org/ontology/iao.html" target="_blank">Information Artifact Ontology</a>
+            and used for more mappings to other ontologies from the <a href="https://obofoundry.org/" target="_blank">Open Biological and Biomedical Ontology Foundry</a>.
+            <a href="#example-13">Example 13</a> shows tinnitus recorded in an <code>fhir:Observation</code> resource and interpreted as a phenotypic abnormality, but one could also model it as a symptom, disease, disorder, process, disposition, situation, etc. in other contexts.
+            This example FHIR RDF data is not conformant for exchange and the core FHIR specification does not endorse any such mappings, which will vary depending on the data, codes, and ontologies involved.
+        </p>
+
+    <pre class="example yaml">@prefix obo:  &lt;http://purl.obolibrary.org/obo/&gt; .
+@prefix skos: &lt;http://www.w3.org/2004/02/skos/core#&gt; .
+
+:exampleObservationRecord a fhir:Observation ;
+    fhir:subject [
+        fhir:reference [ fhir:v "Patient/examplePatientRecord" ] ;
+        fhir:l :examplePatientRecord # OPTIONAL resource link
+    ] ;
+    # Re-interpretation of concept IRI. Coding omitted for brevity.
+    fhir:code [
+        # 'is about' from Information Artifact Ontology
+        obo:IAO_0000136 :exampleTinnitusFinding ;
+    ] .
+
+# 'Tinnitus (finding)' from SNOMED
+:exampleTinnitusFinding a sct:60862001 . 
+
+# 'tinnitus' from Human Phenotype Ontology
+:exampleTinnitus a obo:HP_0000360 .
+
+# Alternative, conservative terminology mapping
+sct:60862001 skos:relatedMatch obo:HP_0000360 . 
+
+
+# Associated Patient and Person records
+:examplePatientRecord a fhir:Patient .
+
+:examplePersonRecord a fhir:Person ;
+    fhir:link [
+        fhir:target [
+            fhir:l :examplePatientRecord ;
+            fhir:reference [ fhir:v "Patient/examplePatientRecord" ] ;
+        ] ;
+    ] .
+
+
+# Monotonic mapping to ontologies
+:examplePatientRecord a obo:OBI_0000078 ; # 'eMedical Record' from Ontology for Biomedical Investigations
+   # 'is about' 
+   obo:IAO_0000136 :exPerson .
+
+:examplePersonRecord a obo:OBI_0000078 ; # 'eMedical Record' from Ontology for Biomedical Investigations
+    # 'is about'
+    obo:IAO_0000136 :exPerson .
+
+:exPerson a obo:MF_0000016 ; # 'human being' from Mental Functioning Ontology
+    # 'has role' from Relations Ontology
+    obo:RO_0000087 [ 
+        a obo:OBI_0000093 ; # 'patient role' from Ontology for Biomedical Investigations
+    ] ;
+    # 'participates in' from Relations Ontology
+    obo:RO_0000056 :exampleTinnitusFinding ;
+    # 'has phenotype' from Relations Ontology
+    obo:RO_0002200 :exampleTinnitus .
+</pre>
+
+</section>
+
     </section>
 
     <section id="previous-fhir-versions">
-        <h2>Previous FHIR ontology versions</h2>
+        <h2>Previous FHIR Ontology Versions</h2>
 
         <p>OWL ontologies for FHIR RDF versions STU3 [[FHIR-OWL-STU3]], R4 [[FHIR-OWL-R4]], and R5 [[FHIR-OWL-R5]] are available to use but will only be officially updated if their corresponding FHIR specification versions publish new updates.</p>
 
@@ -1203,10 +1331,10 @@ SELECT ?patient WHERE {
             <li>Use <code>fhir:link</code> for <a>resource links</a> and <code>fhir:value</code> for <a>primitive type</a> literal values.</li>
             <li>Use lowercased first letters for <a>primitive type</a> class names like <code>fhir:code</code>, resulting in some ambiguity.</li>
             <li>Use "Component" in the names for some, but not all, <a href="#element-definitions">BackboneElement</a> subclasses, resulting in some ambiguity.</li>
-            <li>Includes redundant classes for <a href="https://build.fhir.org/elementdefinition-definitions.html#ElementDefinition.contentReference" target="_blank">content references</a>.</li>
+            <li>Include redundant classes for <a href="https://build.fhir.org/elementdefinition-definitions.html#ElementDefinition.contentReference" target="_blank">content references</a>.</li>
         </ul>
 
-        <p>Version R4 and STU3:</p>
+        <p>Versions R4 and STU3:</p>
         <ul>
             <li>Use fully qualified property names like <code>fhir:Patient.name</code> instead of short names like <code>fhir:name</code>.</li>
         </ul>
@@ -1215,16 +1343,16 @@ SELECT ?patient WHERE {
 
     <section id="rights">
         <h2>Intellectual Rights</h2>
-        <p>HL7® and FHIR® are the registered trademarks of Health Level Seven International and their use of these trademarks does not constitute an endorsement by HL7.</p>
+        <p>HL7® and FHIR® are the registered trademarks of Health Level Seven International and the use of these trademarks does not constitute an endorsement by HL7.</p>
         <p>This document contains content that is copyright of SNOMED International. Implementers must have the appropriate <a href="https://www.snomed.org/get-snomed" target="_blank">SNOMED CT Affiliate license</a>.</p>
-        <p>This document contains content from <a href="http://loinc.org/" target="_blank">LOINC</a>. LOINC is copyright © 1995-2020, Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.</p>
+        <p>This document contains content from <a href="http://loinc.org/" target="_blank">LOINC</a>. LOINC is copyright © Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.</p>
     </section>
 
 
     <section id="acknowledgements">
         <h2>Acknowledgements</h2>
         <p>David Booth, Eric Prud'hommeaux, Harold Solbrig, and Anthony Mallia conceived of the FHIR ontology.</p>
-        <p>Tim Prudhomme authored this document. Programmers for the FHIR OWL ontology generator: Anthony Mallia for R3, Harold Solbrig for R4, Daniel Stone for R5, Tim Prudhomme for R6.
+        <p>Tim Prudhomme authored this document. Programmers for the FHIR OWL ontology generator: Anthony Mallia for STU3, Harold Solbrig for R4, Daniel Stone for R5, Tim Prudhomme for R6.
         </p>
         <p>W3C HCLS Community Group (previously "Interest Group") and HL7 contributors to the development of the FHIR ontology include: Jim Balhoff, Erich Bremer, David Booth, Grahame Grieve, Detlef Grittner, Rob Hausam, Anthony Mallia, Josh Mandel, Lloyd McKenzie, Claude Nanjo, Harold Solbrig, Daniel Stone, Tim Prudhomme, Eric Prud'hommeaux, and Gaurav Vaidya.</p>
     </section>
