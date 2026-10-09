@@ -31,10 +31,10 @@ import jsonasobj
 from collections import OrderedDict
 from typing import Optional
 
-from defaults import log_info, log_warning, log_error
-from fhir_types import fhir_type_for
-from utils import *
-from namespaces import Namespaces
+from archive.python.hcls_fhir_rdf.defaults import log_info, log_warning, log_error
+from archive.python.hcls_fhir_rdf.fhir_types import fhir_type_for
+from archive.python.hcls_fhir_rdf.utils import *
+from archive.python.hcls_fhir_rdf.namespaces import Namespaces
 
 # Type aliases
 ShExC = str

@@ -27,12 +27,12 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from json import dumps
 import jsonasobj
-from defaults import log_error
+from archive.python.hcls_fhir_rdf.defaults import log_error
 from typing import Optional
 
 
 # Checked against http://hl7-fhir.github.io/extensibility.html#json-inner  12/04/2015
-from namespaces import Namespaces
+from archive.python.hcls_fhir_rdf.namespaces import Namespaces
 
 value_extension = """ (fhir:valueInteger xsd:integer,
     | fhir:valueDecimal xsd:decimal,

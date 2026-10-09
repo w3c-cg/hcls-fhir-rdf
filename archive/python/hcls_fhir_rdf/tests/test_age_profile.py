@@ -28,31 +28,17 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-
-from hcls_fhir_rdf.rdflib_formats import *
-
-# Note that the list of formats will probably evolve as versions of rdflib change.
+import os
+from archive.python.hcls_fhir_rdf.fhir_elements import PathElements
 
 
-class RdflibFormatTestCase(unittest.TestCase):
-    def test_defaults(self):
-        self.assertEqual(['json-ld', 'n3', 'nquads', 'nt', 'pretty-xml', 'trig', 'trix', 'turtle', 'xml'],
-                         known_formats(Serializer))
-        self.assertEqual(['html', 'hturtle', 'json-ld', 'mdata', 'microdata', 'n3', 'nquads', 'nt', 'rdfa',
-                          'rdfa1.0', 'rdfa1.1', 'trig', 'trix', 'turtle', 'xml'], known_formats(Parser))
+class MyTestCase(unittest.TestCase):
+    def test_age_in_shexc(self):
+        elements = PathElements()
+        fname = os.path.join(os.path.dirname('__file__'), 'data', 'age.profile.json')
+        self.assertTrue(elements.proc_file(fname, False))
+        print(elements.as_shexc)
 
-    def test_mime_types(self):
-        self.assertEqual(['application/n-quads', 'application/n-triples', 'application/rdf+xml',
-                          'application/trix', 'json-ld', 'n3', 'nquads', 'nt', 'pretty-xml', 'text/n3', 'text/turtle',
-                          'trig', 'trix', 'turtle', 'xml'], known_formats(Serializer, True))
-
-
-class SuffixTestCase(unittest.TestCase):
-    def test_suffix(self):
-        self.assertEqual('ttl', suffix_for('turtle'))
-        self.assertEqual('html', suffix_for('rdfa'))
-        self.assertEqual('nq', suffix_for('nquads'))
-        self.assertEqual('foo', suffix_for('foo'))
 
 if __name__ == '__main__':
     unittest.main()
