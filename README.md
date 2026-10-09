@@ -22,11 +22,11 @@ The [FHIR publishing process on github](https://github.com/HL7/fhir) generates:
 
 
 ## Directories of this repo
-Still in use:
 * scripts -- Convenience scripts for transforming FHIR RDF data
 * docs/utg -- IRI stems
 * spec -- W3C report documents
 * ig -- Supplemental Implementation Guide
+* archive -- Obsolete data and code from earlier FHIR RDF versions
 
 ## RDF, ShEx, and OWL Generation
 * [HL7/fhir: Official source for the HL7 FHIR Specification](https://github.com/HL7/fhir)
