@@ -1,4 +1,4 @@
-# This workflow is responsible for regenerating the HL7 Terminology IRI stem report (data/utg/iri-stems-in-hl7.md).
+# This workflow is responsible for regenerating the HL7 Terminology IRI stem report (docs/utg/iri-stems-in-hl7.md).
 # It runs on a schedule and triggers the regeneration process.
 # See ../../scripts/utg/README.md#workflow for more details.
 
@@ -52,17 +52,17 @@ jobs:
 
       # Add the header and footer to the Markdown table to make the final report.
       - name: Create final report
-        run: cat data/utg/iri-stem-report-header.md tmp/utg-iri-stem-report.md data/utg/iri-stem-report-footer.md > data/utg/iri-stems-in-hl7.md
+        run: cat docs/utg/iri-stem-report-header.md tmp/utg-iri-stem-report.md docs/utg/iri-stem-report-footer.md > docs/utg/iri-stems-in-hl7.md
 
       # Has the final report changed? If not, exit early.
-      - name: Check for changes to the single file `data/utg/iri-stems-in-hl7.md`.
+      - name: Check for changes to the single file `docs/utg/iri-stems-in-hl7.md`.
         run: |
           # Stage only that one file to detect if it changed relative to checked out commit
-          git add -N data/utg/iri-stems-in-hl7.md || true
+          git add -N docs/utg/iri-stems-in-hl7.md || true
           # Exit with code 0 if no diff; non-zero otherwise.
-          if git diff --quiet -- data/utg/iri-stems-in-hl7.md; then
+          if git diff --quiet -- docs/utg/iri-stems-in-hl7.md; then
             echo "file_unchanged=true" >> $GITHUB_OUTPUT
-            echo "No changes in data/utg/iri-stems-in-hl7.md; exiting."
+            echo "No changes in docs/utg/iri-stems-in-hl7.md; exiting."
             exit 0
           else
             echo "file_unchanged=false" >> $GITHUB_OUTPUT
@@ -79,8 +79,8 @@ jobs:
           reviewers: dbooth-boston, ericprud, tmprd # comma-separated list of reviewers
           body: |
             This PR was opened automatically by .github/workflows/regenerate-hl7-terminology-iri-stem-table.yml.
-            It updates the generated file `data/utg/iri-stems-in-hl7.md`.
-          commit-message: "chore: update data/utg/iri-stems-in-hl7.md (automated)"
+            It updates the generated file `docs/utg/iri-stems-in-hl7.md`.
+          commit-message: "chore: update docs/utg/iri-stems-in-hl7.md (automated)"
           delete-branch: false # keep false so branch/PR can be updated on next run; set true if you prefer branch cleanup after merge
           labels: automated
-          add-paths: data/utg/iri-stems-in-hl7.md
+          add-paths: docs/utg/iri-stems-in-hl7.md

@@ -29,7 +29,7 @@
 
 import unittest
 import os
-from hcls_fhir_rdf.fhir_elements import PathElements
+from archive.python.hcls_fhir_rdf.fhir_elements import PathElements
 
 
 class MyTestCase(unittest.TestCase):

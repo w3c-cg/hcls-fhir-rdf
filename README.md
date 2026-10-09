@@ -11,7 +11,7 @@ The [FHIR publishing process on github](https://github.com/HL7/fhir) generates:
 * a fairly minimal FHIR ontology; and
 * RDF serializations for all of the FHIR examples in the FHIR specification.   
 
-<span color="red">**The RDF and ShEx generation code in this repository is no longer maintained. See documentation below for an overview of the current generation process.**</span>
+<span color="red">**The archived RDF and ShEx generation code in this repository is no longer maintained. See documentation below for an overview of the current generation process.**</span>
 
 ## Resources
 * [FHIR RDF Overview](https://www.hl7.org/fhir/rdf.html)
@@ -20,24 +20,15 @@ The [FHIR publishing process on github](https://github.com/HL7/fhir) generates:
 
 ---------
 
-## Directories
-Still in use:
+
+## Directories of this repo
 * scripts -- Convenience scripts for transforming FHIR RDF data
+* docs/utg -- IRI stems
+* spec -- W3C report documents
+* ig -- Supplemental Implementation Guide
+* archive -- Obsolete data and code from earlier FHIR RDF versions
 
-Obsolete:
-* <del>data - the current stable FHIR specification</del>
-  * <del>examples -- XML examples from specification</del>
-  * <del>site -- FHIR definitions (we use the json format)</del>
-  * <del>rdf -- RDF representation of examples</del>
-  * <del>definitions.shex -- shex definitions of FHIR content</del>
-  * <del>definitions.xml -- XML definitions used in xslt transformation</del>
-  * <del>extract.log -- log of build for the data directory</del>
-* <del>hcls_fhir_rdf -- python 3 modules for building data directory</del>
-* <del>ontology -- early work on modeling FHIR definitions in OWL</del>
-* <del>tests -- python unit tests (not a lot at the moment)</del>
-* <del>xsl -- XSLT 2.0 transform for converting FHIR instances from XML to RDF</del>
-
-## RDF & ShEx Generation
+## RDF, ShEx, and OWL Generation
 * [HL7/fhir: Official source for the HL7 FHIR Specification](https://github.com/HL7/fhir)
   * Publishes the FHIR specification and its artifacts
   * Uses Kindling for generating all artifact serializations

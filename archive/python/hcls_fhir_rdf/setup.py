@@ -20,7 +20,7 @@ else:
     v34_requires = []
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'hcls_fhir_rdf'))
-import hcls_fhir_rdf
+import archive.python.hcls_fhir_rdf as hcls_fhir_rdf
 
 long_description = """Tools for RDF representations for FHIR"""
 
