@@ -1,0 +1,38 @@
+PREFIX fhir: <http://hl7.org/fhir/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# Converts RDF collections (except those used with OWL vocabulary) to "indexed triples" with `fhir:index` added
+DELETE {
+  ?subject ?property ?head .
+  ?cell rdf:first ?member ; rdf:rest ?rest .
+}
+INSERT {
+  ?subject ?property ?member .
+  ?member fhir:index ?index .
+}
+WHERE {
+  ?subject ?property ?head .
+  FILTER(STRSTARTS(STR(?property), STR(fhir:)))
+  ?head rdf:rest* rdf:nil .
+  FILTER NOT EXISTS {
+    FILTER(?head != rdf:nil)
+    ?ontologySubject
+      (owl:intersectionOf|owl:unionOf|owl:oneOf|owl:withRestrictions|owl:onProperties|owl:members|owl:disjointUnionOf|owl:propertyChainAxiom|owl:hasKey)/rdf:rest*
+      ?head .
+  }
+  OPTIONAL {
+    {
+      SELECT ?head ?cell ?member ?rest
+        (xsd:integer(COUNT(DISTINCT ?preceding) - 1) AS ?index)
+      WHERE {
+        ?head rdf:rest* ?cell .
+        ?cell rdf:first ?member ; rdf:rest ?rest .
+        ?head rdf:rest* ?preceding .
+        ?preceding rdf:rest* ?cell .
+      }
+      GROUP BY ?head ?cell ?member ?rest
+    }
+  }
+}

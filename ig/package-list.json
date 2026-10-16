@@ -1,0 +1,15 @@
+{
+  "package-id": "w3c.hcls.cg.semweb-for-fhir",
+  "canonical": "https://w3id.org/hclscg/fhir",
+  "title": "Semantic Web for FHIR",
+  "introduction": "Practical guidance and examples for applying RDF, SPARQL, ShEx, and OWL to FHIR data.",
+  "list": [
+    {
+      "version": "current",
+      "desc": "Continuous Integration Build",
+      "path": "https://w3c-cg.github.io/hcls-fhir-rdf/ig/",
+      "status": "ci-build",
+      "current": true
+    }
+  ]
+}

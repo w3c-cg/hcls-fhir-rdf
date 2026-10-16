@@ -1,0 +1,168 @@
+name: build-ig
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [gh-pages]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-ig-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/gh-pages' }}
+
+jobs:
+  build:
+    if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'ig-v')
+    runs-on: ubuntu-latest
+    name: Build Implementation Guide
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+
+      - name: Install Jekyll
+        run: gem install jekyll -v 4.4.1 --no-document
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install SUSHI
+        run: npm install -g fsh-sushi@3.16.3
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Prepare IG
+        working-directory: ig
+        run: |
+          mkdir -p input-cache
+          curl --fail --location --retry 3 \
+            https://github.com/HL7/fhir-ig-publisher/releases/download/3.0.1/publisher.jar \
+            --output input-cache/publisher.jar
+          sushi build .
+
+      - name: Check release version
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version=$(jq -r '.version' ig/fsh-generated/resources/ImplementationGuide-w3c.hcls.cg.semweb-for-fhir.json)
+          test "$RELEASE_TAG" = "ig-v$version"
+
+      - name: Build IG
+        run: sh ig/scripts/_genonce.sh
+
+      - name: Enforce clean QA
+        run: |
+          jq '{errs, warnings, "broken-links": .["broken-links"]}' ig/output/qa.json
+          jq -e '.errs == 0 and .warnings == 0 and .["broken-links"] == 0' ig/output/qa.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ig-qa
+          path: ig/output/qa*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ig-site
+          path: ig/output/
+          if-no-files-found: error
+
+  pages:
+    needs: build
+    if: >-
+      github.repository == 'w3c-cg/hcls-fhir-rdf' &&
+      github.ref == 'refs/heads/gh-pages' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/configure-pages@v5
+
+      - name: Stage existing site sources
+        run: |
+          mkdir -p _site-source
+          rsync -a --exclude '/.git/' --exclude '/.github/' --exclude '/ig/' \
+            --exclude '/_site-source/' --exclude '/_site/' ./ _site-source/
+
+      - name: Render existing site
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./_site-source
+          destination: ./_site
+
+      - name: Add rendered IG at /ig/
+        uses: actions/download-artifact@v4
+        with:
+          name: ig-site
+          path: _site/ig
+
+      - name: Check site layout
+        run: |
+          test -s _site/index.html
+          test -s _site/spec/index.html
+          test -s _site/docs/utg/iri-stems-in-hl7.html
+          test -s _site/ig/index.html
+          test ! -e _site/ig/input-cache
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  release:
+    needs: build
+    if: >-
+      github.repository == 'w3c-cg/hcls-fhir-rdf' &&
+      github.event_name == 'release' &&
+      startsWith(github.event.release.tag_name, 'ig-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ig-site
+          path: ig-site
+
+      - name: Archive release site
+        working-directory: ig-site
+        run: zip -qr ../ig-site.zip .
+
+      - name: Attach release site
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" ig-site.zip

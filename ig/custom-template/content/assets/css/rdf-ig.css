@@ -1,0 +1,19 @@
+/* Semantic Web for FHIR colors (W3C RDF logo blue); overrides cqf.css defaults from fhir2.base.template */
+:root {
+  --navbar-bg-color: #0c479c; /* 2. Header container color */
+  --footer-bg-color: #707070; /* 3. Footer background color */
+  --footer-container-bg-color: #0c479c; /* 4. Footer container color */
+  --btn-hover-color: #072d63; /* 6. Menu button hover color */
+  --btn-active-color: #da0c23; /* 7. Menu button active color */
+}
+
+/* Previously provided by hl7.base.template's hl7.css */
+#hl7-search {
+  line-height: 50px;
+  float: var(--ig-right);
+  margin-top: 4px;
+  color: maroon;
+}
+#hl7-search a {
+  color: inherit;
+}
