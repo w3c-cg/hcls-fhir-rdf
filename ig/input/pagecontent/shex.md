@@ -1,10 +1,11 @@
+{::options toc_levels="1..4" /}
 [ShEx (Shape Expressions)](https://shex.io/shex-semantics/) describes the RDF
 properties and values expected at a node. Use it to check the graph structure
 of FHIR RDF, including primitive wrappers, nested elements, and RDF collections.
 See [Validation](validation.html) for the relationship to FHIR validation,
 SHACL, and OWL consistency checking.
 
-## Choose your FHIR version and syntax
+### Choose your FHIR version and syntax
 
 These examples use FHIR R6 RDF and excerpts from the
 [continuous-build FHIR ShEx schema](https://build.fhir.org/fhir.shex).
@@ -19,7 +20,7 @@ and RDF collections. The flat, multi-valued derived graph used in later
 shapes. STU3 and R4 RDF also require release-matched schemas because their
 property names and repeated-element encoding differ.
 
-## Example FHIR ShEx
+### Example FHIR ShEx
 
 The excerpts below illustrate how the generated schema is organized; they are
 **not a standalone schema**. Load the complete release-matched schema for
@@ -36,7 +37,7 @@ PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
 ```
 
-### Resource structure and inheritance
+#### Resource structure and inheritance
 
 `<DomainResource>` extends `<Resource>` with narrative, contained resources,
 and extensions. `EXTENDS` incorporates the base shape's constraints under the
@@ -60,7 +61,7 @@ optional, with at most one matching triple; without a cardinality suffix, a
 triple constraint requires exactly one. `CLOSED` disallows outgoing predicates
 not permitted by the shape, accounting for inherited constraints.
 
-### Patient elements
+#### Patient elements
 
 The Patient shape combines inherited resource structure with patient-specific
 elements. Primitive properties such as `fhir:active` point to wrapper nodes
@@ -101,7 +102,7 @@ The optional `a [fhir:Patient]?` constraint is not a target-selection rule.
 Select the intended patient node and the Patient shape explicitly; do not
 assume that loading the schema validates every resource in the graph.
 
-### Nested contact elements
+#### Nested contact elements
 
 Each member of the patient's contact collection is checked against
 `<Patient.contact>`. This shape extends `<BackboneElement>` and describes the
@@ -128,7 +129,7 @@ constraining `fhir:l`. When that link is present, its target must match
 `<Organization>` in the supplied graph. An IRI alone does not load the target
 resource; make the required linked data available to the validator.
 
-### Allowed code values
+#### Allowed code values
 
 These named node constraints enumerate literal codes. In the gender
 constraint above, `fhir:v` reaches the primitive value before applying the
@@ -144,9 +145,9 @@ An enumerated value set checks the listed RDF terms. It does not provide
 general terminology-service validation, subsumption testing, or automatic
 enforcement of every FHIR terminology binding.
 
-## How to use ShEx
+### How to use ShEx
 
-### Prepare the graph and schema
+#### Prepare the graph and schema
 
 1. Identify the FHIR release used to produce the RDF and obtain its complete
    ShEx schema. The [continuous-build schema](https://build.fhir.org/fhir.shex)
@@ -160,7 +161,7 @@ enforcement of every FHIR terminology binding.
    consistently. Moving a schema to a local file can change how relative shape
    labels resolve.
 
-### Select a node and shape
+#### Select a node and shape
 
 Supply a focus node and the resource shape to test, using the validator's
 node/shape options or a [shape map](https://shex.io/shape-map/).
@@ -174,7 +175,7 @@ overall command succeeded. Confirm how the validator selects a named graph
 or constructs a union graph; triples in another graph may otherwise be
 unavailable to the check.
 
-### Run validation and retain the result
+#### Run validation and retain the result
 
 Run the selected node/shape checks and retain the diagnostics. As a check of
 the validation setup, test both a known conforming fixture and a deliberately
@@ -185,7 +186,7 @@ A passing result applies to the selected nodes, shapes, and graph only. Keep
 FHIRPath invariants, profile-specific rules, and terminology checks explicit
 in the wider [FHIR validation workflow](validation.html).
 
-## Interpreting failures
+### Interpreting failures
 
 A completed ShEx validation reporting nonconformance means that the tested
 node does not match the selected shape in the supplied graph. A parse error,
@@ -203,7 +204,7 @@ and diagnostic path with the report. Distinguish a definite mismatch from an
 unperformed check so that downstream users do not mistake a partial validation
 for a complete FHIR conformance assessment.
 
-## Tool compatibility
+### Tool compatibility
 
 Testing and documenting ShEx 2.2-compatible tools remains a project TODO. The
 excerpts on this page are explanatory, not a tested validator recipe. Before

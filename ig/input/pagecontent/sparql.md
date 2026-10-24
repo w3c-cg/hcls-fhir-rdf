@@ -1,8 +1,9 @@
+{::options toc_levels="1..5" /}
 [SPARQL (SPARQL Protocol and RDF Query Language)](https://www.w3.org/TR/sparql11-query/) is a W3C standard query language for [RDF](rdf.html) data. 
 FHIR SPARQL queries match graph patterns in [FHIR RDF](fhir-rdf.html) data.
 SPARQL can be used to explore, join, and transform FHIR data as a graph, including together with other RDF data such as ontologies and terminologies.
 
-## Example FHIR SPARQL
+### Example FHIR SPARQL
 Add these prefix declarations at the top of each query:
 ```sparql
 PREFIX fhir: <http://hl7.org/fhir/>
@@ -13,9 +14,9 @@ PREFIX loinc: <https://loinc.org/rdf/>
 
 The following examples are based on FHIR R6 RDF syntax and semantics, unless otherwise noted.
 
-### Find active patients
+#### Find active patients
 
-#### Triple pattern
+##### Triple pattern
 
 SPARQL queries generally use [triple patterns](https://www.w3.org/TR/sparql12-query/#QSynTriples).
 Each triple names its subject, predicate, and object, including the primitive
@@ -29,7 +30,7 @@ SELECT ?patient WHERE {
 }
 ```
 
-#### Blank nodes
+##### Blank nodes
 Blank nodes used in [Predicate-object lists](https://www.w3.org/TR/sparql12-query/#predObjLists) shorten queries to match more closely the structure of FHIR Turtle data.
 
 ```sparql
@@ -39,7 +40,7 @@ SELECT ?patient WHERE {
 }
 ```
 
-#### Property paths
+##### Property paths
 [Property paths](https://www.w3.org/TR/sparql12-query/#propertypaths) are helpful for traversing through multiple blank nodes.
 ```sparql
 SELECT ?patient WHERE {
@@ -48,7 +49,7 @@ SELECT ?patient WHERE {
 }
 ```
 
-##### STU3/R4 FHIR SPARQL
+###### STU3/R4 FHIR SPARQL
 FHIR STU3 and R4 RDF use long property names.
 ```sparql
 SELECT ?patient WHERE {
@@ -57,9 +58,9 @@ SELECT ?patient WHERE {
 }
 ```
 
-### List patient names
+#### List patient names
 
-#### RDF collections (R5+)
+##### RDF collections (R5+)
 
 FHIR R5+ RDF uses [RDF collections](https://www.w3.org/TR/sparql12-query/#collections),
 which are linked lists.
@@ -79,7 +80,7 @@ SELECT ?patient ?family ?given WHERE {
 ORDER BY ?family
 ```
 
-#### Indexed triples (STU3/R4 or internal)
+##### Indexed triples (STU3/R4 or internal)
 
 FHIR R4 and STU3 RDF use indexed triples.
 RDF collections in FHIR R5+ RDF may be converted to indexed triples for internal
@@ -99,7 +100,7 @@ SELECT ?patient ?family ?given WHERE {
 ORDER BY ?family
 ```
 
-### References: Find observations by subject
+#### References: Find observations by subject
 
 On the flat, multi-valued view, match the resolved subject IRI through `fhir:l`.
 The nested shape retains the code and quantity structures, without list paths
@@ -120,7 +121,7 @@ SELECT ?observation ?code ?value WHERE {
 }
 ```
 
-### Find coded data
+#### Find coded data
 
 Match a single code in `Observation.code` using the literal `fhir:code` and
 `fhir:system` values on the same Coding node. This example finds blood pressure
@@ -139,7 +140,7 @@ SELECT ?observation WHERE {
 }
 ```
 
-#### Concept IRIs: Extract blood pressure components
+##### Concept IRIs: Extract blood pressure components
 
 Each nested `fhir:component` pattern matches a member of the repeated property.
 The CodeableConcept nodes reached through `fhir:code` must carry the indicated
@@ -172,7 +173,7 @@ SELECT ?observation ?systolic ?diastolic WHERE {
 }
 ```
 
-#### String operations: Find patients by email
+##### String operations: Find patients by email
 
 The discriminator and value belong to the same telecom node, corresponding to
 the FHIRPath selection `Patient.telecom.where(system='email')`. This example
@@ -189,7 +190,7 @@ SELECT ?patient ?email WHERE {
 }
 ```
 
-#### Date ranges: Find observations in a date range
+##### Date ranges: Find observations in a date range
 
 This example covers complete `xsd:dateTime` literals, using an inclusive start
 and exclusive end for the year 2012 in UTC. FHIR partial dates and Period-valued
@@ -208,7 +209,7 @@ SELECT ?observation ?date ?code WHERE {
 ORDER BY ?date
 ```
 
-#### Chained references: Join an observation search to a patient name
+##### Chained references: Join an observation search to a patient name
 
 Following `fhir:l` joins an Observation to its Patient, as in a chained search
 such as `Observation?subject:Patient.name=...`. The patient resource must be
@@ -227,14 +228,14 @@ SELECT ?observation ?patientName ?code WHERE {
 }
 ```
 
-## Triple stores
+### Triple stores
 
 No product recommendation is made yet. Evaluate standards conformance,
 SHACL/ShEx integration, reasoning profile, RDF 1.2 plans, named-graph
 semantics, backup, access control, and realistic FHIR query performance. A
 reproducible benchmark remains a project TODO.
 
-## Context graphs
+### Context graphs
 
 Use named graphs to distinguish source assertions, terminology expansions,
 inferred triples, and transformed views. Keep graph identity and provenance in
@@ -247,7 +248,7 @@ GROUP BY ?graph
 ORDER BY DESC(?triples)
 ```
 
-## Relationship to FHIR analytics approaches
+### Relationship to FHIR analytics approaches
 
 | Need | Prefer |
 | --- | --- |
