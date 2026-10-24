@@ -1,0 +1,21 @@
+PREFIX fhir: <http://hl7.org/fhir/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+# Requires explicit `rdf:type/a fhir:CodeableConcept` assertions which could be materialized from the FHIR ontology
+# Notes on triple stores:
+# If your data is in a named graph, the default graph usually won't contain it, so wrap both sides in a GRAPH clause:
+# `INSERT { GRAPH <http://example.org/my-graph> { ?bs rdf:type ?concept } }`
+# Some stores, such as Jena with unionDefaultGraph or GraphDB, treat the default graph differently. 
+# If the plain version reports zero changes, a missing GRAPH clause is the first thing to check.
+INSERT {
+  ?cc rdf:type ?concept .
+}
+WHERE {
+  ?cc a fhir:CodeableConcept ;
+      fhir:coding/rdf:rest*/rdf:first ?coding .
+
+  ?coding fhir:extension/(rdf:rest*/rdf:first)? ?ext .
+
+  ?ext fhir:url/fhir:l <http://hl7.org/fhir/StructureDefinition/rdf-concept-iri> ;
+       fhir:value/fhir:l ?concept .
+}

@@ -1,0 +1,59 @@
+PREFIX fhir: <http://hl7.org/fhir/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+
+# Requires access to relevant NamingSystem resources, with registered "iri-stem" values
+DELETE { ?last rdf:rest rdf:nil }
+INSERT {
+  ?attach ?attachProp ( [
+    fhir:url [
+      fhir:v "http://hl7.org/fhir/StructureDefinition/rdf-concept-iri"^^xsd:anyURI ;
+      fhir:l <http://hl7.org/fhir/StructureDefinition/rdf-concept-iri>
+    ] ;
+    fhir:value [
+      rdf:type fhir:Uri ;
+      fhir:v ?conceptLit ;
+      fhir:l ?conceptIri
+    ]
+  ] ) .
+}
+WHERE {
+  {
+    SELECT ?coding ?code (SAMPLE(?stemValue) AS ?stem)
+    WHERE {
+      ?coding a fhir:Coding ;
+              fhir:system/fhir:v ?system ;
+              fhir:code/fhir:v ?code .
+
+      # Step 1: NamingSystem whose "uri" uniqueId matches Coding.system
+      ?ns a fhir:NamingSystem ;
+          fhir:uniqueId/rdf:rest*/rdf:first ?uriId , ?stemId .
+      ?uriId fhir:type/fhir:v "uri" ;
+             fhir:value/fhir:v ?nsUri .
+      FILTER (STR(?nsUri) = STR(?system))
+
+      # Step 2: that NamingSystem's "iri-stem"
+      ?stemId fhir:type/fhir:v "iri-stem" ;
+              fhir:value/fhir:v ?stemValue .
+
+      # Skip codings that already have the extension
+      FILTER NOT EXISTS {
+        ?coding fhir:extension/(rdf:rest*/rdf:first)?/fhir:url/fhir:l
+                <http://hl7.org/fhir/StructureDefinition/rdf-concept-iri>
+      }
+    }
+    GROUP BY ?coding ?code
+  }
+
+  # Step 3: stem + code
+  BIND (IRI(CONCAT(STR(?stem), ENCODE_FOR_URI(STR(?code)))) AS ?conceptIri)
+  BIND (STRDT(STR(?conceptIri), xsd:anyURI) AS ?conceptLit)
+
+  # Step 4: append to an existing extension list, or start a new one
+  OPTIONAL {
+    ?coding fhir:extension/rdf:rest* ?last .
+    ?last rdf:rest rdf:nil .
+  }
+  BIND (IF(BOUND(?last), ?last, ?coding) AS ?attach)
+  BIND (IF(BOUND(?last), rdf:rest, fhir:extension) AS ?attachProp)
+}

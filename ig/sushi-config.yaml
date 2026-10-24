@@ -1,0 +1,76 @@
+id: w3c.hcls.cg.semweb-for-fhir
+canonical: https://w3id.org/hclscg/fhir
+name: SemanticWebForFHIR
+title: Semantic Web for FHIR
+description: >-
+  Practical, non-normative guidance and reusable examples for applying RDF,
+  SPARQL, ShEx, and OWL to FHIR data.
+status: draft
+version: 0.1.0
+fhirVersion: 5.0.0
+copyrightYear: 2026+
+releaseLabel: CI Build
+license: CC0-1.0
+jurisdiction: http://unstats.un.org/unsd/methods/m49/m49.htm#001 "World"
+publisher:
+  name: W3C Semantic Web in Health Care and Life Sciences Community Group
+  url: https://www.w3.org/community/hclscg/
+
+pages:
+  index.md:
+    title: Overview
+  fhir-rdf.md:
+    title: FHIR RDF
+    rdf.md:
+      title: RDF
+  analytics.md:
+    title: Analytics
+    sparql.md:
+      title: FHIR SPARQL
+    owl.md:
+      title: FHIR OWL
+  validation.md:
+    title: Validation
+    shex.md:
+      title: FHIR ShEx
+  # terminology.md:
+  #   title: Terminology
+  # mapping.md:
+  #   title: Mapping
+  artifacts.md:
+    title: Artifacts
+    query-artifacts.md:
+      title: SPARQL Queries
+    # version-artifacts.md:
+    #   title: FHIR RDF Artifacts
+  examples.md:
+    title: Examples
+  contributing.md:
+    title: Contributing
+
+parameters:
+  # excludettl: true
+  path-pages:
+    - input/pagecontent
+    - input/artifacts
+
+menu:
+  Overview: index.html
+  FHIR RDF:
+    Overview: fhir-rdf.html
+    RDF: rdf.html
+  Analytics:
+    Overview: analytics.html
+    FHIR SPARQL: sparql.html
+    FHIR OWL: owl.html
+  Validation:
+    Overview: validation.html
+    FHIR ShEx: shex.html
+  # Terminology: terminology.html
+  # Mapping: mapping.html
+  Artifacts:
+    Overview: artifacts.html
+    SPARQL Queries: query-artifacts.html
+    # FHIR RDF Artifacts: version-artifacts.html
+  Examples: examples.html
+  Contributing: contributing.html

@@ -1,0 +1,9 @@
+== Suppressed Messages ==
+
+# The standard template generates optional IP, dependency, and globals fragments,
+# but this narrative-only guide does not reference them on a page.
+%is not included anywhere in the produced implementation guide%
+
+# UN M49 code 001 (World) is the intended jurisdiction. The build uses -tx n/a,
+# so the external UN M49 code system is unavailable for terminology validation.
+WARNING: ImplementationGuide/w3c.hcls.cg.semweb-for-fhir: ImplementationGuide.jurisdiction[0].coding[0].system: A definition for CodeSystem 'http://unstats.un.org/unsd/methods/m49/m49.htm' could not be found, so the code cannot be validated

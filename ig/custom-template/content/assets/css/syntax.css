@@ -1,0 +1,50 @@
+:is(.language-sparql, .language-turtle) {
+  --syntax-keyword: #7040a0;
+  --syntax-name: #005f73;
+  --syntax-variable: #8a3900;
+  --syntax-string: #216e39;
+  --syntax-number: #934000;
+  --syntax-comment: #58636f;
+  --syntax-punctuation: #46515c;
+  --syntax-text: #20252b;
+}
+
+:is(.language-sparql, .language-turtle) code {
+  color: var(--syntax-text);
+  text-shadow: none;
+}
+
+:is(.language-sparql, .language-turtle) :is(.k, .kd, .kc, .kn, .kp, .kr, .kt, .nb, .token.keyword, .token.boolean, .token.builtin) {
+  color: var(--syntax-keyword);
+}
+
+:is(.language-sparql, .language-turtle) :is(.nn, .nl, .ss, .n, .token.function, .token.url, .token.prefix, .token.local-name) {
+  color: var(--syntax-name);
+  background: none;
+}
+
+:is(.language-sparql, .language-turtle) :is(.nv, .token.variable) {
+  color: var(--syntax-variable);
+}
+
+:is(.language-sparql, .language-turtle) :is(.s, .s1, .s2, .sb, .se, .token.string) {
+  color: var(--syntax-string);
+}
+
+:is(.language-sparql, .language-turtle) :is(.m, .mi, .mf, .token.number) {
+  color: var(--syntax-number);
+}
+
+:is(.language-sparql, .language-turtle) :is(.c, .c1, .cm, .token.comment) {
+  color: var(--syntax-comment);
+}
+
+:is(.language-sparql, .language-turtle) :is(.p, .o, .ow, .token.punctuation, .token.operator) {
+  color: var(--syntax-punctuation);
+  background: none;
+}
+
+:is(.language-sparql, .language-turtle) .err {
+  color: inherit;
+  background: none;
+}

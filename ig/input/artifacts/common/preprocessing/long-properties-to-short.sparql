@@ -1,0 +1,17 @@
+PREFIX fhir: <http://hl7.org/fhir/>
+
+DELETE {
+	?subject ?longPredicate ?object .
+}
+INSERT {
+	?subject ?shortPredicate ?object .
+}
+WHERE {
+	?subject ?longPredicate ?object .
+	FILTER(STRSTARTS(STR(?longPredicate), STR(fhir:)))
+	BIND(STRAFTER(STR(?longPredicate), STR(fhir:)) AS ?localName)
+	FILTER(CONTAINS(?localName, "."))
+	BIND(REPLACE(?localName, "^.*[.]", "") AS ?shortName)
+	FILTER(STRLEN(?shortName) > 0)
+	BIND(IRI(CONCAT(STR(fhir:), ?shortName)) AS ?shortPredicate)
+}
