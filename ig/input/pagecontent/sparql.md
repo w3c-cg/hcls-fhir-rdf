@@ -1,5 +1,5 @@
 {::options toc_levels="1..5" /}
-[SPARQL (SPARQL Protocol and RDF Query Language)](https://www.w3.org/TR/sparql11-query/) is a W3C standard query language for [RDF](rdf.html) data. 
+[SPARQL (SPARQL Protocol and RDF Query Language)](https://www.w3.org/TR/sparql12-query/) is a W3C standard query language for [RDF](rdf.html) data. 
 FHIR SPARQL queries match graph patterns in [FHIR RDF](fhir-rdf.html) data.
 SPARQL can be used to explore, join, and transform FHIR data as a graph, including together with other RDF data such as ontologies and terminologies.
 
@@ -9,10 +9,10 @@ Add these prefix declarations at the top of each query:
 PREFIX fhir: <http://hl7.org/fhir/>
 PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>
-PREFIX loinc: <https://loinc.org/rdf/>
+PREFIX loinc: <http://loinc.org/rdf/>
 ```
 
-The following examples are based on FHIR R6 RDF syntax and semantics, unless otherwise noted.
+The following examples are based on FHIR R5+ RDF syntax and semantics, unless otherwise noted.
 
 #### Find active patients
 
@@ -31,7 +31,7 @@ SELECT ?patient WHERE {
 ```
 
 ##### Blank nodes
-Blank nodes used in [Predicate-object lists](https://www.w3.org/TR/sparql12-query/#predObjLists) shorten queries to match more closely the structure of FHIR Turtle data.
+Blank nodes used with [Predicate-object lists](https://www.w3.org/TR/sparql12-query/#predObjLists) shorten queries to match more closely the structure of FHIR Turtle data.
 
 ```sparql
 SELECT ?patient WHERE {
@@ -80,7 +80,7 @@ SELECT ?patient ?family ?given WHERE {
 ORDER BY ?family
 ```
 
-##### Indexed triples (STU3/R4 or internal)
+##### Indexed triples (internal data only)
 
 FHIR R4 and STU3 RDF use indexed triples.
 RDF collections in FHIR R5+ RDF may be converted to indexed triples for internal
@@ -100,41 +100,94 @@ SELECT ?patient ?family ?given WHERE {
 ORDER BY ?family
 ```
 
+The remaining examples use this pattern to simplify the queries.
+
+
 #### References: Find observations by subject
 
-On the flat, multi-valued view, match the resolved subject IRI through `fhir:l`.
-The nested shape retains the code and quantity structures, without list paths
-or primitive wrappers. The optional value pattern selects quantity magnitudes,
-not every possible Observation value type.
+References can be resolved by simply querying the `fhir:l` links added to FHIR RDF references.
+The optional value pattern selects only Observation values of type Quantity.
 
 ```sparql
-SELECT ?observation ?code ?value WHERE {
+SELECT ?patient ?observation ?code ?value WHERE {
   ?observation a fhir:Observation ;
-    fhir:subject/fhir:l <http://hl7.org/fhir/Patient/example> ;
-    fhir:code/fhir:coding/fhir:code ?code .
+    fhir:subject/fhir:l ?patient ;
+    fhir:code/fhir:coding/fhir:code/fhir:v ?code .
   OPTIONAL {
     ?observation fhir:value [
       a fhir:Quantity ;
-      fhir:value ?value
+      fhir:value/fhir:v ?value
     ]
   }
 }
 ```
+
+##### Indirect references: Find patients by practitioner NPI
+FHIR [conditional references](https://www.hl7.org/fhir/http.html#vs-refs) could use identifiers, like `Practitioner?identifier=http://hl7.org/fhir/sid/us-npi|9999947796`. 
+```turtle
+# Example usage of a conditional reference
+[] a fhir:Bundle ;
+  fhir:nodeRole fhir:treeRoot ;
+  fhir:type [ fhir:v "transaction" ] ;
+  fhir:entry [
+     fhir:fullUrl [ fhir:v "urn:uuid:7f3c1e2a-0b5d-4c8e-9a61-2d4f8b9e0c11"^^xsd:anyURI ] ;
+     fhir:resource <urn:uuid:7f3c1e2a-0b5d-4c8e-9a61-2d4f8b9e0c11> ;
+     fhir:request [
+       fhir:method [ fhir:v "POST" ] ;
+       fhir:url    [ fhir:v "Patient"^^xsd:anyURI ]
+     ]
+  ] .
+
+<urn:uuid:7f3c1e2a-0b5d-4c8e-9a61-2d4f8b9e0c11> a fhir:Patient ;
+  fhir:generalPractitioner [
+    fhir:reference [ fhir:v "Practitioner?identifier=http://hl7.org/fhir/sid/us-npi|9999947796" ]
+  ] .
+```
+
+These should not be queried directly as IRI values of `fhir:l`, because the actual referenced resource would have a different IRI such as `<http://example.org/Practitioner/123`>.
+```sparql
+SELECT DISTINCT ?patient ?practitioner WHERE {
+  ?patient a fhir:Patient ;
+    fhir:generalPractitioner/fhir:reference/fhir:v "Practitioner?identifier=http://hl7.org/fhir/sid/us-npi|9999947796" .
+
+  # No direct link between the reference and the referenced resource
+  OPTIONAL {
+    ?practitioner a fhir:Practitioner ;
+      fhir:identifier [
+        fhir:system/fhir:v "http://hl7.org/fhir/sid/us-npi"^^xsd:anyURI ;
+        fhir:value/fhir:v "9999947796"
+      ] .
+  }
+}
+```
+Outside of the context of bundles, these kinds of references are also better represented as [logical references](https://www.hl7.org/fhir/references.html#reference), which separate the identifier into an independently queryable value. 
+```turtle
+# Example usage of a logical reference
+<urn:uuid:7f3c1e2a-0b5d-4c8e-9a61-2d4f8b9e0c11> a fhir:Patient ;
+  fhir:generalPractitioner [
+     fhir:type [ fhir:v "Practitioner"^^xsd:anyURI ] ;
+     fhir:identifier [
+       fhir:system [ fhir:v "http://hl7.org/fhir/sid/us-npi"^^xsd:anyURI ] ;
+       fhir:value  [ fhir:v "9999947796" ]
+     ]
+  ] .
+```
+
 
 #### Find coded data
 
 Match a single code in `Observation.code` using the literal `fhir:code` and
 `fhir:system` values on the same Coding node. This example finds blood pressure
 observations coded with LOINC `85354-9`, without requiring a concept IRI type
-assertion.
+assertion. The `^^xsd:token` is required as the data type for FHIR code.
 
 ```sparql
 SELECT ?observation WHERE {
   ?observation a fhir:Observation ;
     fhir:code [
       fhir:coding [
-        fhir:code "85354-9" ;
-        fhir:system "http://loinc.org"^^xsd:anyURI
+        fhir:code/fhir:v "85354-9"^^xsd:token ;
+        fhir:system/fhir:v "http://loinc.org"^^xsd:anyURI
       ]
     ] .
 }
@@ -156,24 +209,24 @@ SELECT ?observation ?systolic ?diastolic WHERE {
       fhir:code [ a loinc:8480-6 ] ; # Concept IRI
       fhir:value [
         a fhir:Quantity ;
-        fhir:value ?systolic ;
-        fhir:system "http://unitsofmeasure.org"^^xsd:anyURI ;
-        fhir:code "mm[Hg]"
+        fhir:value/fhir:v ?systolic ;
+        fhir:system/fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ;
+        fhir:code/fhir:v "mm[Hg]"^^xsd:token
       ]
     ] ;
     fhir:component [
       fhir:code [ a loinc:8462-4 ] ; # Concept IRI
       fhir:value [
         a fhir:Quantity ;
-        fhir:value ?diastolic ;
-        fhir:system "http://unitsofmeasure.org"^^xsd:anyURI ;
-        fhir:code "mm[Hg]"
+        fhir:value/fhir:v ?diastolic ;
+        fhir:system/fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ;
+        fhir:code/fhir:v "mm[Hg]"^^xsd:token
       ]
     ] .
 }
 ```
 
-##### String operations: Find patients by email
+#### String operations: Find patients by email
 
 The discriminator and value belong to the same telecom node, corresponding to
 the FHIRPath selection `Patient.telecom.where(system='email')`. This example
@@ -183,14 +236,14 @@ filters an email domain rather than implementing the FHIR `email` token search.
 SELECT ?patient ?email WHERE {
   ?patient a fhir:Patient ;
     fhir:telecom [
-      fhir:system "email" ;
-      fhir:value ?email
+      fhir:system/fhir:v "email" ;
+      fhir:value/fhir:v ?email
     ] .
   FILTER(STRENDS(LCASE(STR(?email)), "@example.com"))
 }
 ```
 
-##### Date ranges: Find observations in a date range
+#### Date ranges: Find observations in a date range
 
 This example covers complete `xsd:dateTime` literals, using an inclusive start
 and exclusive end for the year 2012 in UTC. FHIR partial dates and Period-valued
@@ -200,8 +253,8 @@ and exclusive end for the year 2012 in UTC. FHIR partial dates and Period-valued
 ```sparql
 SELECT ?observation ?date ?code WHERE {
   ?observation a fhir:Observation ;
-    fhir:effective ?date ;
-    fhir:code/fhir:coding/fhir:code ?code .
+    fhir:effective/fhir:v ?date ;
+    fhir:code/fhir:coding/fhir:code/fhir:v ?code .
   FILTER(isLiteral(?date) && DATATYPE(?date) = xsd:dateTime)
   FILTER(?date >= "2012-01-01T00:00:00Z"^^xsd:dateTime &&
          ?date < "2013-01-01T00:00:00Z"^^xsd:dateTime)
@@ -209,7 +262,7 @@ SELECT ?observation ?date ?code WHERE {
 ORDER BY ?date
 ```
 
-##### Chained references: Join an observation search to a patient name
+#### Chained references: Join an observation search to a patient name
 
 Following `fhir:l` joins an Observation to its Patient, as in a chained search
 such as `Observation?subject:Patient.name=...`. The patient resource must be
@@ -221,9 +274,9 @@ SELECT ?observation ?patientName ?code WHERE {
   ?observation a fhir:Observation ;
     fhir:subject/fhir:l [
       a fhir:Patient ;
-      fhir:name/fhir:family ?patientName .
+      fhir:name/fhir:family/fhir:v ?patientName
     ];
-    fhir:code/fhir:coding/fhir:code ?code .
+    fhir:code/fhir:coding/fhir:code/fhir:v ?code .
   FILTER(CONTAINS(LCASE(?patientName), "smith"))
 }
 ```
@@ -254,6 +307,6 @@ ORDER BY DESC(?triples)
 | --- | --- |
 | Standardized FHIR search with parameters and custom operations | [FHIR REST API](https://hl7.org/fhir/http.html) |
 | Stable tabular projections for BI tools | [SQL-on-FHIR](https://sql-on-fhir.org/) |
-| Quality measures and clinical decision support | [CQL](https://build.fhir.org/ig/HL7/cql/) |
+| Quality measures and clinical decision support | [CQL](https://cql.hl7.org/) |
 | Graph traversal, ontology joins, inference, or RDF-native data | FHIR SPARQL |
 | A relational source exposed as a virtual graph | R2RML/Ontop ("FHIR SPARQL-on-SQL") |
