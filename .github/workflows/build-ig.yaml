@@ -117,7 +117,14 @@ jobs:
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./_site-source
-          destination: ./_site
+          destination: ./_jekyll-site
+
+      # jekyll-build-pages runs in Docker as root, so its output is root-owned.
+      # Copy it into a runner-owned _site so the IG download can create _site/ig.
+      - name: Assemble site
+        run: |
+          mkdir _site
+          cp -R _jekyll-site/. _site/
 
       - name: Add rendered IG at /ig/
         uses: actions/download-artifact@v4
