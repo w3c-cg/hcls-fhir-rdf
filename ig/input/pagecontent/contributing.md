@@ -34,4 +34,6 @@ This guide is not a W3C Standard, nor is it on the W3C Standards Track, nor is i
 
 |Author Name|Affiliation|Role|
 |----|----|----|
+|David Booth|W3C HCLS Community Group|Contributor|
 |Tim Prudhomme|W3C HCLS Community Group|Editor|
+|Eric Prud'hommeaux|W3C HCLS Community Group|Contributor|

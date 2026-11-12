@@ -2,11 +2,6 @@ Semantic Web for FHIR collects practical patterns, queries, scripts, and techniq
 
 This implementation guide is developed by the RDF subgroup of the [HL7 ITS Working Group](https://www.hl7.org/Special/committees/xml/index.cfm) and the [W3C Semantic Web in Health Care and Life Sciences (HCLS) Community Group](https://www.w3.org/community/hclscg/).
 
-<div class="stu-note" markdown="1">
-This guide is entirely optional and informative (non-normative). FHIR RDF is defined by the core
-FHIR specification and this guide is not a prerequisite for using it.
-</div>
-
 ### Purpose
 
 [FHIR RDF](http://hl7.org/fhir/rdf.html) is designed for using FHIR as a graph data model, especially to better integrate with non-FHIR data and systems.
@@ -18,6 +13,12 @@ related Semantic Web technologies to FHIR data. It complements the core specific
 No specific profiles are included. FHIR RDF works with any FHIR profiles.
 
 Users who are familiar with RDF and OWL, but maybe not familiar with FHIR, are encouraged to read [FHIR OWL Ontology Guide W3C Community Group Report](https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html).
+
+<div class="stu-note" markdown="1">
+This guide is entirely optional and informative (non-normative). FHIR RDF is defined by the core
+FHIR specification and this guide is not a prerequisite for using it.
+</div>
+
 
 ### Quick Start
 

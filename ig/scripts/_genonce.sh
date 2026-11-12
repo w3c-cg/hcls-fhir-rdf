@@ -15,7 +15,7 @@ cd "$project_root"
 # fi
 
 # Disable terminology by default
-txoption="-tx n/a"
+# txoption="-tx n/a"
 
 
 if [ ! -f "$publisher" ]; then
