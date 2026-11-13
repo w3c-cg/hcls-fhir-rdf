@@ -1561,7 +1561,7 @@ sct:60862001 skos:relatedMatch obo:HP_0000360 .
             Different FHIR core versions are not typically used in the same contexts, but the ontology versions could be used together (e.g. for mapping) by adding a version prefix to the base IRI (e.g. <a href="http://hl7.org/fhir/r4/" target="_blank"><code>http://hl7.org/fhir/r4/</code></a>), like in the <code>owl:versionIRI</code>.
         </p>
 
-        <p>Version R6:</p>
+        <p>Versions R6 and above:</p>
         <ul>
             <li>Uses uppercased first letters for <a>primitive type</a> class names like <code>fhir:Code</code> to differentiate from object properties like <code>fhir:code</code>.</li>
             <li>Uses <code>ElementDefinition.id</code> for the names of <a href="#element-definitions">BackboneElement</a> subclasses.</li>
@@ -1571,7 +1571,7 @@ sct:60862001 skos:relatedMatch obo:HP_0000360 .
             <li>Does not include axioms related to "modifier classes" prefixed with "_", which were removed as too strong.</li>
         </ul>
 
-        <p>Versions R5 and R6:</p>
+        <p>Versions R5 and above:</p>
         <ul>
             <li>Use short property names like <code>fhir:name</code> instead of <code>fhir:Patient.name</code> for legibility.</li>
             <li>Use <code>fhir:l</code> for <a>resource links</a> and <code>fhir:v</code> for <a>primitive type</a> literal values.</li>
@@ -1584,14 +1584,14 @@ sct:60862001 skos:relatedMatch obo:HP_0000360 .
             <li>Includes incorrect cardinality axioms and class names.</li>
         </ul>
 
-        <p>Versions R5, R4, and STU3:</p>
+        <p>Versions R5 and below:</p>
         <ul>
             <li>Use lowercased first letters for <a>primitive type</a> class names like <code>fhir:code</code>, resulting in some ambiguity (in R5).</li>
             <li>Use "Component" in the names for some, but not all, <a href="#element-definitions">BackboneElement</a> subclasses, resulting in some ambiguity.</li>
             <li>Include redundant classes for <a href="https://hl7.org/fhir/6.0.0-snapshot1/elementdefinition-definitions.html#ElementDefinition.contentReference" target="_blank">content references</a>.</li>
         </ul>
 
-        <p>Versions R4 and STU3:</p>
+        <p>Versions R4 and below:</p>
         <ul>
             <li>Use fully qualified property names like <code>fhir:Patient.name</code> instead of short names like <code>fhir:name</code>.</li>
             <li>Use <code>fhir:link</code> for <a>resource links</a> and <code>fhir:value</code> for <a>primitive type</a> literal values.</li>
