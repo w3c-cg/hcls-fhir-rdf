@@ -47,9 +47,16 @@ This guide focuses on application patterns. It does not redefine the FHIR RDF
 serialization, introduce profiles, or replace the FHIR validator. Examples are
 designed to be copied, tested, and adapted.
 
-| In scope | Out of scope |
-| --- | --- |
-| SPARQL, graph modeling, ShEx, OWL, R2RML, and operational guidance | New FHIR resources, profiles, extensions, or normative serialization rules |
+<table class="grid">
+  <tbody>
+	<th>In scope</th>
+	<th>Out of scope</th>
+    <tr>
+      <td>SPARQL, graph modeling, ShEx, OWL, R2RML, and operational guidance</td>
+      <td>New FHIR resources, profiles, extensions, or normative serialization rules</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Using this guide
 

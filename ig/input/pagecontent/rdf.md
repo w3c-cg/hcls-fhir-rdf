@@ -4,8 +4,8 @@ RDF can be used to link FHIR data with other data, ontologies, and terminologies
 
 ### RDF Triples
 
-In FHIR JSON, you navigate resource objects, nested elements, and references.
-In FHIR RDF, you work with statements called **triples**. Each triple has three parts:
+In FHIR JSON, FHIR resources are objects and FHIR elements are nested properties.
+In FHIR RDF, FHIR elements are **[triples](https://www.w3.org/TR/rdf-primer/#section-triple)** and FHIR resources are sets of triples. Each triple has three parts:
 
 | Part | Meaning | FHIR example |
 | --- | --- | --- |
@@ -15,25 +15,22 @@ In FHIR RDF, you work with statements called **triples**. Each triple has three 
 
 A set of triples forms an **RDF graph**. Subjects and objects connect statements
 to one another, so a nested element or a linked resource can be reached by
-following edges. A graph is not necessarily a picture or a particular storage
-technology; it can be held in memory, saved in a file, or queried in an RDF
-database, often called a **triple store**.
+following edges. A graph is not necessarily a particular storage technology. It can be held in memory, saved in a file, or queried in an RDF database, often called a **triple store**.
 
 RDF uses three kinds of terms:
 
-* An **IRI** (Internationalized Resource Identifier) identifies a resource,
+* An **[IRI](https://www.w3.org/TR/rdf-concepts/#section-IRIs)** (Internationalized Resource Identifier) identifies a [resource](https://www.w3.org/TR/rdf-concepts/#resources-and-statements) (in a broader sense than "FHIR resource"),
   property, or other named thing. For example, `http://hl7.org/fhir/Patient`
-  identifies the Patient class, whereas a resource IRI identifies one Patient resource instance.
-  An IRI can look like a web address without guaranteeing that it can be
-  retrieved. Using it does not automatically fetch data from that address.
-* A **literal** is a value, such as a string, boolean, or date, with a datatype
+  identifies the FHIR Patient class, whereas a resource IRI like `http://hl7.org/fhir/Patient/123` identifies one Patient resource instance.
+  An IRI can look like a web address without guaranteeing that it can be retrieved.
+* A **[literal](https://www.w3.org/TR/rdf-concepts/#section-Graph-Literal)** is a value, such as a string, boolean, or date, with a datatype
   or, for language-tagged text, a language tag. The string `"Patient/p001"`
   is not itself an RDF link to a Patient resource.
-* A **blank node** represents a thing without assigning it an IRI. FHIR RDF
+* A **[blank node](https://www.w3.org/TR/rdf-primer/#section-blank-node)** represents a thing without assigning it an IRI. FHIR RDF
   commonly uses blank nodes for nested elements. A blank node is not a missing
   value, and its label is not a stable identifier across files or imports.
 
-Subjects can be IRIs or blank nodes. Predicates are IRIs. Objects can be any
+Subjects can be IRIs or blank nodes. Predicates are always IRIs. Objects can be any
 of these three kinds of terms. Shared IRIs let independently produced graphs
 refer to the same things, but applications still need an explicit policy for
 resolving FHIR references and reconciling resource identities.
@@ -57,7 +54,7 @@ the relevant release. Application-specific transformations, such as removing int
 | [RDF](https://www.w3.org/TR/rdf12-concepts/) | Represents facts as subject-predicate-object triples identified by IRIs. |
 | [SPARQL](https://www.w3.org/TR/sparql12-query/) | Queries and transforms RDF datasets. |
 | [ShEx](http://shex.io/) | Validates the local shape of RDF nodes. |
-| [OWL](https://www.w3.org/OWL/) | Expresses ontologies and supports logical inference. |
+| [OWL](https://www.w3.org/OWL/) | Represents ontologies and supports logical inference. |
 
 #### SPARQL: match graph patterns ([FHIR SPARQL](sparql.html))
 

@@ -17,7 +17,7 @@ expected at a node. The difference is that ShEx checks RDF edges and nodes,
 including primitive wrappers and RDF collections, rather than a JSON or XML tree.
 It is not a replacement serialization for a StructureDefinition.
 
-| Check | What passing tells you | What it does not establish |
+| Check | What passing establishes | What it does NOT establish |
 | --- | --- | --- |
 | Turtle parsing | The document can be read as an RDF graph. | That the graph represents a valid FHIR resource. |
 | ShEx validation | The selected node matches the selected shape in the supplied graph. | That every FHIR invariant, terminology binding, or profile rule has been checked. |
