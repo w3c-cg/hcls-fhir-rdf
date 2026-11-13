@@ -17,3 +17,36 @@
 #hl7-search a {
   color: inherit;
 }
+
+#project-nav {
+  margin-left: 10px;
+}
+
+#project-logo:hover {
+  text-decoration: none;
+}
+
+#ig-status {
+  width: 100%;
+  position: absolute;
+  pointer-events: none; /* allow clicking behind element */
+}
+
+#hcls-logo {
+  display: inline-block;
+  font-weight: bold;
+  width: 105px;
+  line-height: normal;
+  vertical-align: middle;
+  font-size: smaller;
+  text-align:center;
+}
+
+@media (max-width: 767px) {
+  #hcls-logo {
+    display: none;
+  }
+  .hide-on-mobile {
+    display: none;
+  }
+}

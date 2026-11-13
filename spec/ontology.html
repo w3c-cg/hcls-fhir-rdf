@@ -17,13 +17,13 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         var respecConfig = {
             darkMode: false,
             specStatus: "CG-DRAFT",
-            publishDate: "2026-10-18",
+            publishDate: "2026-11-20",
             shortName: "fhir-owl-guide",
             group: "hclscg",
-            latestVersion: "https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html",
+            latestVersion: "https://www.w3.org/community/reports/hclscg/fhir-owl-guide/",
             edDraftURI: "https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html",
             github: {
-                repoURL: "https://github.com/w3c/hcls-fhir-rdf",
+                repoURL: "https://github.com/w3c-cg/hcls-fhir-rdf",
                 branch: "gh-pages"
             },
             otherLinks: [
@@ -273,10 +273,8 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
 <body>
 
     <p class="copyright">
-        Copyright &copy; 2026 the Contributors to the
-        Guide to the FHIR OWL Ontology Community Group Report,
-        published by the
-        <a href="https://www.w3.org/community/hclscg/" target="_blank">W3C Semantic Web in Health Care and Life Sciences Community Group</a>
+        <a href="https://www.w3.org/policies/#copyright">Copyright</a> &copy; 2026 the Editors of the Guide to the FHIR OWL Ontology Community Group Report,
+        published by the <a href="https://www.w3.org/community/hclscg/">W3C Semantic Web in Health Care and Life Sciences Community Group</a>
         under the
         <a href="https://www.w3.org/community/about/agreements/cla/" target="_blank">W3C Community Contributor License Agreement (CLA)</a>.
         A human-readable
@@ -300,7 +298,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         <p>
             This report is entirely informative (non-normative), supplemental guidance for users of <a href="https://www.w3.org/standards/" target="_blank">W3C standards</a> who may not be familiar with FHIR.
             This report is not endorsed by HL7. The authoritative, <a href="https://hl7.org/fhir/6.0.0-snapshot1/rdf.html" target="_blank">normative specification of FHIR RDF</a> is published by HL7 [[FHIR-RDF]] and supersedes this document where any conflicts may arise.
-            FHIR users are encouraged to read the <a href="https://w3c.github.io/hcls-fhir-rdf/ig/index.html" target="_blank">Semantic Web for FHIR IG</a>.
+            FHIR users are encouraged to read the <a href="https://w3c-cg.github.io/hcls-fhir-rdf/ig/index.html" target="_blank">Semantic Web for FHIR Implementation Guide</a>.
         </p>
         <p>HL7® and FHIR® are the registered trademarks of Health Level Seven International and their use does not constitute an endorsement by HL7.</p>
         <p>
@@ -314,7 +312,7 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
             <a href="https://www.w3.org/community/">W3C Community and Business Groups</a>.
         </p>
         <p>
-            <a href="https://github.com/w3c/hcls-fhir-rdf/issues/">GitHub Issues</a>
+            <a href="https://github.com/w3c-cg/hcls-fhir-rdf/issues/">GitHub Issues</a>
             are preferred for discussion of this report.
         </p>
     </section>
@@ -616,7 +614,8 @@ https://w3c-cg.github.io/hcls-fhir-rdf/spec/ontology.html
         </p>
 
         <p>
-            No FHIR ontology classes are explicitly declared to be disjoint but it is plausible that some are intended to be, e.g. <code>fhir:Resource</code> and <code>fhir:Element</code>, or many of their subclasses.
+            No FHIR ontology classes are explicitly declared to be disjoint, but it is plausible that the FHIR specification implies some classes are disjoint, e.g. <code>fhir:Resource</code> and <code>fhir:Element</code>, or many of their subclasses.
+            The FHIR ontology is intended to be a conservative, faithful representation of FHIR and therefore does not currently include explicit disjoint axioms, but may in the future as a non-breaking change.
         </p>
 
         <section id="structure-definitions">
@@ -1562,7 +1561,7 @@ sct:60862001 skos:relatedMatch obo:HP_0000360 .
             Different FHIR core versions are not typically used in the same contexts, but the ontology versions could be used together (e.g. for mapping) by adding a version prefix to the base IRI (e.g. <a href="http://hl7.org/fhir/r4/" target="_blank"><code>http://hl7.org/fhir/r4/</code></a>), like in the <code>owl:versionIRI</code>.
         </p>
 
-        <p>Version R6:</p>
+        <p>Versions R6 and above:</p>
         <ul>
             <li>Uses uppercased first letters for <a>primitive type</a> class names like <code>fhir:Code</code> to differentiate from object properties like <code>fhir:code</code>.</li>
             <li>Uses <code>ElementDefinition.id</code> for the names of <a href="#element-definitions">BackboneElement</a> subclasses.</li>
@@ -1572,7 +1571,7 @@ sct:60862001 skos:relatedMatch obo:HP_0000360 .
             <li>Does not include axioms related to "modifier classes" prefixed with "_", which were removed as too strong.</li>
         </ul>
 
-        <p>Versions R5 and R6:</p>
+        <p>Versions R5 and above:</p>
         <ul>
             <li>Use short property names like <code>fhir:name</code> instead of <code>fhir:Patient.name</code> for legibility.</li>
             <li>Use <code>fhir:l</code> for <a>resource links</a> and <code>fhir:v</code> for <a>primitive type</a> literal values.</li>
@@ -1585,14 +1584,14 @@ sct:60862001 skos:relatedMatch obo:HP_0000360 .
             <li>Includes incorrect cardinality axioms and class names.</li>
         </ul>
 
-        <p>Versions R5, R4, and STU3:</p>
+        <p>Versions R5 and below:</p>
         <ul>
             <li>Use lowercased first letters for <a>primitive type</a> class names like <code>fhir:code</code>, resulting in some ambiguity (in R5).</li>
             <li>Use "Component" in the names for some, but not all, <a href="#element-definitions">BackboneElement</a> subclasses, resulting in some ambiguity.</li>
             <li>Include redundant classes for <a href="https://hl7.org/fhir/6.0.0-snapshot1/elementdefinition-definitions.html#ElementDefinition.contentReference" target="_blank">content references</a>.</li>
         </ul>
 
-        <p>Versions R4 and STU3:</p>
+        <p>Versions R4 and below:</p>
         <ul>
             <li>Use fully qualified property names like <code>fhir:Patient.name</code> instead of short names like <code>fhir:name</code>.</li>
             <li>Use <code>fhir:link</code> for <a>resource links</a> and <code>fhir:value</code> for <a>primitive type</a> literal values.</li>
@@ -1615,8 +1614,8 @@ sct:60862001 skos:relatedMatch obo:HP_0000360 .
 
     <section id="acknowledgements">
         <h2>Acknowledgements</h2>
-        <p>David Booth, Eric Prud'hommeaux, Harold Solbrig, and Anthony Mallia conceived of the FHIR ontology.</p>
-        <p>Tim Prudhomme authored this document. Programmers for the FHIR OWL ontology generator: Anthony Mallia for STU3, Harold Solbrig for R4, Daniel Stone for R5, Tim Prudhomme for R6.
+        <p>David Booth, Grahame Grieve, Anthony Mallia, Lloyd McKenzie, Eric Prud'hommeaux, and Harold Solbrig conceived of the FHIR ontology.</p>
+        <p>Tim Prudhomme authored this document. Programmers for the FHIR OWL ontology generator: Grahame Grieve and Harold Solbrig for STU3 and R4, Daniel Stone for R5, Tim Prudhomme for R6.
         </p>
         <p>W3C HCLS Community Group (previously "Interest Group") and HL7 contributors to versions of the FHIR ontology include: Jim Balhoff, David Booth, Erich Bremer, Grahame Grieve, Detlef Grittner, Rob Hausam, Guoqian Jiang, Anthony Mallia, Josh Mandel, Lloyd McKenzie, Claude Nanjo, Tim Prudhomme, Eric Prud'hommeaux, Harold Solbrig, Daniel Stone, and Gaurav Vaidya.</p>
     </section>
